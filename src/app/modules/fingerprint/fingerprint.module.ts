@@ -1,7 +1,9 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Platform, PlatformModule } from '@angular/cdk/platform';
 import { FingerprintComponent} from "../../components/fingerprint/fingerprint.component";
+import {MatChipsModule} from "@angular/material/chips";
+import {FlexModule} from "@angular/flex-layout";
+
 
 
 @NgModule({
@@ -13,7 +15,8 @@ import { FingerprintComponent} from "../../components/fingerprint/fingerprint.co
   ],
   imports: [
     CommonModule,
-    PlatformModule
+    MatChipsModule,
+    FlexModule
   ]
 })
 export class FingerprintModule { }
