@@ -1,5 +1,8 @@
 import {Component, OnInit} from '@angular/core';
 import {FingerprintService} from "../../services/fingerprint.service";
+import {Fingerprint} from "../../models/fingerprint.model";
+import {Constants} from "../../constants/constants";
+import {Subject, takeUntil} from "rxjs";
 
 @Component({
   selector: 'app-fingerprint',
@@ -8,11 +11,22 @@ import {FingerprintService} from "../../services/fingerprint.service";
 })
 export class FingerprintComponent implements OnInit {
 
+  public dataSource : any[] = [];
+  public displayedColumns: string[] =
+    [
+      this.constants.ATTRIBUTE_TYPE,
+      this.constants.VALUE
+    ];
 
-  constructor (public _fingerprintService: FingerprintService) {}
+  private unsubscribe: Subject<any> = new Subject();
+
+  constructor (
+    public fingerprintService: FingerprintService,
+    public constants: Constants
+  ) {}
 
 
-  public getNavigatorType() {
+/*  public getNavigatorType() {
     const usrAgent = navigator.userAgent;
     return this._fingerprintService.navigatorType = (usrAgent.indexOf("Edg") > -1) ? "Microsoft Edge (Chromium)" :
      (usrAgent.indexOf("Firefox") > -1) ? "Mozilla Firefox" : (usrAgent.indexOf("Opera") > -1) ? "Opera" :
@@ -20,38 +34,66 @@ export class FingerprintComponent implements OnInit {
            (usrAgent.indexOf("Edge") > -1) ? "Microsoft Edge (Legacy)" :
              (usrAgent.indexOf("Chrome") > -1) ? "Google Chrome" :
                (usrAgent.indexOf("Safari") > -1) ? "Safari" : "unknown"
-  }
+  }*/
 
-  public getNavigatorUserAgent(){
+ /* public getNavigatorUserAgent(){
     return this._fingerprintService.userAgent = navigator.userAgent;
-  }
-  public getTimeZone(){
+  }*/
+  /*public getTimeZone(){
     return this._fingerprintService.timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-  }
-  public getLocale(){
+  }*/
+  /*public getLocale(){
     return this._fingerprintService.locale = Intl.DateTimeFormat().resolvedOptions().locale;
-  }
-  public getCalendar(){
+  }*/
+  /*public getCalendar(){
     return this._fingerprintService.calendar = Intl.DateTimeFormat().resolvedOptions().calendar;
-  }
-  public getNumberingSystem(){
+  }*/
+  /*public getNumberingSystem(){
     return this._fingerprintService.numberingSystem = Intl.DateTimeFormat().resolvedOptions().numberingSystem;
-  }
-  public getPlatformType(){
+  }*/
+  /*public getPlatformType(){
     return this._fingerprintService.platformType = window.navigator.platform;
-  }
+  }*/
 
   public loadInitialData(){
-    this.getNavigatorType();
-    this.getTimeZone();
-    this.getCalendar();
-    this.getLocale();
-    this.getNumberingSystem();
-    this.getNavigatorUserAgent();
-    this.getPlatformType();
+
+    const usrAgent = navigator.userAgent;
+    this.fingerprintService.navigatorType = (usrAgent.indexOf("Edg") > -1) ? "Microsoft Edge (Chromium)" :
+      (usrAgent.indexOf("Firefox") > -1) ? "Mozilla Firefox" : (usrAgent.indexOf("Opera") > -1) ? "Opera" :
+        (usrAgent.indexOf("Trident") > -1) ? "Microsoft Internet Explorer" :
+          (usrAgent.indexOf("Edge") > -1) ? "Microsoft Edge (Legacy)" :
+            (usrAgent.indexOf("Chrome") > -1) ? "Google Chrome" :
+              (usrAgent.indexOf("Safari") > -1) ? "Safari" : "unknown";
+
+    this.fingerprintService.userAgent = navigator.userAgent;
+    this.fingerprintService.timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    this.fingerprintService.locale = Intl.DateTimeFormat().resolvedOptions().locale;
+    this.fingerprintService.calendar = Intl.DateTimeFormat().resolvedOptions().calendar;
+    this.fingerprintService.numberingSystem = Intl.DateTimeFormat().resolvedOptions().numberingSystem;
+    this.fingerprintService.platformType = window.navigator.platform;
+
+    return this.dataSource.push(this.fingerprintService);
   }
 
-
+  saveFingerprint(): void {
+    const data = {
+      id: this.fingerprintService.id,
+      navigatorType: this.fingerprintService.navigatorType,
+      userAgent: this.fingerprintService.userAgent,
+      timeZone: this.fingerprintService.timeZone,
+      locale: this.fingerprintService.locale,
+      calendar: this.fingerprintService.calendar,
+      numberingSystem: this.fingerprintService.numberingSystem,
+      platformType: this.fingerprintService.platformType
+    };
+    this.fingerprintService.createFingerprint(data)
+      .subscribe({
+        next:(res)=>{
+          console.log(res);
+        },
+        error: (e) => console.error(e)
+      });
+  }
 
    /* if((navigator.userAgent.indexOf("Edg") > -1)){
       this.isIEOrEdge = true;
@@ -59,5 +101,6 @@ export class FingerprintComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadInitialData();
+    this.saveFingerprint();
   }
 }

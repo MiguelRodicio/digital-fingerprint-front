@@ -1,6 +1,7 @@
 export class Fingerprint{
 
-  public navigatorType: boolean | any;
+  public id?: number;
+  public navigatorType?: string;
   public timeZone?: string
   public userAgent?: string;
   public locale?: string;
