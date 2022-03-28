@@ -1,28 +1,43 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, Renderer2} from '@angular/core';
 import {FingerprintService} from "../../services/fingerprint.service";
-import {Fingerprint} from "../../models/fingerprint.model";
 import {Constants} from "../../constants/constants";
-import {Subject, takeUntil} from "rxjs";
+import {Subject} from "rxjs";
+import {Fingerprint, JavascriptAttributes} from "../../models/fingerprint.model";
+//Module on decs.d.ts
+import { detectAnyAdblocker } from "just-detect-adblock";
 
 @Component({
   selector: 'app-fingerprint',
   templateUrl: './fingerprint.component.html',
-  styleUrls: ['./fingerprint.component.css']
+  styleUrls: ['./fingerprint.component.scss']
 })
 export class FingerprintComponent implements OnInit {
 
+  private javascriptAttributes?: JavascriptAttributes = {
+    webRenderer: '',
+    connection: '',
+    adblock: '',
+    keyboardLayout: '',
+    cookiesEnabled: false
+  };
   public dataSource : any[] = [];
-  public displayedColumns: string[] =
+  public displayedColumns: any[] =
     [
-      this.constants.ATTRIBUTE_TYPE,
-      this.constants.VALUE
+     /* this.constants.ATTRIBUTE_TYPE,
+      this.constants.VALUE,*/
+      this.constants.USER_AGENT,
+      this.constants.LOCALE,
+      this.constants.CALENDAR,
+      this.constants.NUMBERING_SYSTEM
     ];
+  public fingerprint?: Fingerprint;
 
   private unsubscribe: Subject<any> = new Subject();
 
   constructor (
-    public fingerprintService: FingerprintService,
-    public constants: Constants
+    private fingerprintService: FingerprintService,
+    public constants: Constants,
+    private renderer: Renderer2
   ) {}
 
 
@@ -86,21 +101,94 @@ export class FingerprintComponent implements OnInit {
       numberingSystem: this.fingerprintService.numberingSystem,
       platformType: this.fingerprintService.platformType
     };
-    this.fingerprintService.createFingerprint(data)
+    this.fingerprintService.getAllFingerprints()
       .subscribe({
         next:(res)=>{
           console.log(res);
         },
         error: (e) => console.error(e)
       });
+    /*createFingerprint(data)
+      .subscribe({
+        next:(res)=>{
+          console.log(res);
+        },
+        error: (e) => console.error(e)
+      });*/
   }
 
-   /* if((navigator.userAgent.indexOf("Edg") > -1)){
-      this.isIEOrEdge = true;
-    }*/
+
+  public getVideoCardInfo() {
+    const gl = document.createElement('canvas').getContext('webgl');
+    if (!gl) {
+      return {
+        error: "no webgl",
+      };
+    }
+    if(this.javascriptAttributes?.webRenderer != undefined){
+      this.javascriptAttributes.webRenderer = gl.getExtension('WEBGL_debug_renderer_info');
+      return this.javascriptAttributes.webRenderer ? {
+        vendor: gl.getParameter(this.javascriptAttributes.webRenderer.UNMASKED_VENDOR_WEBGL),
+        renderer:  gl.getParameter(this.javascriptAttributes.webRenderer.UNMASKED_RENDERER_WEBGL),
+      } : {
+        error: "no WEBGL_debug_renderer_info",
+      };
+    }
+    return { error: 'Error'};
+  }
+
+  public getJavascriptAttributesData(){
+    const connection = window.navigator.connection;
+    if(this.javascriptAttributes?.connection!=undefined){
+      this.javascriptAttributes.connection = connection;
+    }
+  }
+
+  public hasAdBlock(){
+    detectAnyAdblocker().then((detected: string) => {
+      if(detected && this.javascriptAttributes?.adblock != undefined){
+        // an adblocker is detected
+         this.javascriptAttributes.adblock = "Yes";
+      }
+      // @ts-ignore
+        this.javascriptAttributes.adblock = "Does not have adblock";
+    });
+  }
+
+  //TODO
+  /* public getKeyboardLayout(){
+    const keyboard = (navigator as any).keyboard;
+    //return this.javascriptAttributes.keyboardLayout = keyboard.getLayoutMap();
+  }*/
+
+  public hasCookiesEnabled() {
+    if(this.javascriptAttributes?.cookiesEnabled != undefined) {
+      this.javascriptAttributes.cookiesEnabled = window.navigator.cookieEnabled;
+    }
+  }
+
+  public deviceMemory() {
+    //const deviceMemory = window.navigator.deviceMemory;
+    const devMem = (window.navigator as any).deviceMemory;
+    console.log(devMem)
+
+
+
+  }
+
 
   ngOnInit(): void {
     this.loadInitialData();
     this.saveFingerprint();
+    this.getJavascriptAttributesData();
+    this.getVideoCardInfo();
+    this.hasAdBlock();
+    this.hasCookiesEnabled();
+    this.deviceMemory();
+    //this.getKeyboardLayout();
+
+
+
+
   }
 }

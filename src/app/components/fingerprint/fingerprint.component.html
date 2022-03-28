@@ -1,12 +1,138 @@
 
-<mat-table [dataSource]="dataSource" class="mat-elevation-z8 col-6">
-  <ng-container matColumnDef="Attribute Type">
-    <mat-header-cell *matHeaderCellDef>{{this.constants.ATTRIBUTE_TYPE}}</mat-header-cell>
-    <mat-cell *matCellDef="let fingerprint">{{this.constants.USER_AGENT}}</mat-cell>
-  </ng-container>
-  <ng-container matColumnDef="Value">
-    <mat-header-cell *matHeaderCellDef>{{this.constants.VALUE}}</mat-header-cell>
+
+
+<!--<div class="div">
+  <mat-card class="col-3">
+    <mat-card-title>
+      {{this.constants.USER_AGENT}}
+    </mat-card-title>
+    <mat-card-content>
+      {{this.fingerprintService.userAgent}}
+    </mat-card-content>
+  </mat-card>
+</div>
+<br>
+<div class="div">
+  <mat-card class="col-3">
+    <mat-card-title>
+      {{this.constants.LOCALE}}
+    </mat-card-title>
+    <mat-card-content>
+      {{this.fingerprintService.locale}}
+    </mat-card-content>
+  </mat-card>
+</div>
+<br>
+<div class="div">
+  <mat-card class="col-3">
+    <mat-card-title>
+      {{this.constants.NUMBERING_SYSTEM}}
+    </mat-card-title>
+    <mat-card-content>
+      {{this.fingerprintService.numberingSystem}}
+    </mat-card-content>
+  </mat-card>
+</div>
+<br>
+<div class="div">
+  <mat-card class="col-3">
+    <mat-card-title>
+      {{this.constants.PLATFORM_TYPE}}
+    </mat-card-title>
+    <mat-card-content>
+      {{this.fingerprintService.platformType}}
+    </mat-card-content>
+  </mat-card>
+</div>
+<br>
+<div class="div">
+  <mat-card class="col-3">
+    <mat-card-title>
+      {{this.constants.NAVIGATOR_TYPE}}
+    </mat-card-title>
+    <mat-card-content>
+      {{this.fingerprintService.navigatorType}}
+    </mat-card-content>
+  </mat-card>
+</div>
+<br>
+<div class="div">
+  <mat-card class="col-3">
+    <mat-card-title>
+      {{this.constants.TIMEZONE}}
+    </mat-card-title>
+    <mat-card-content>
+      {{this.fingerprintService.timeZone}}
+    </mat-card-content>
+  </mat-card>
+</div>-->
+
+
+<!--<div class="example-container mat-elevation-z8">
+  <div class="example-table-container">
+    <table mat-table [dataSource]="dataSource">
+
+      &lt;!&ndash;Position Column&ndash;&gt;
+      <ng-container matColumnDef="UserAgent">
+        <th mat-header-cell *matHeaderCellDef> User Agent </th>
+        <td mat-cell *matCellDef="let fingerprint" class='m-card-title' test data-label='UserAgent'>
+        {{fingerprint.userAgent}}
+      </ng-container>
+
+      &lt;!&ndash; Name Column &ndash;&gt;
+      <ng-container matColumnDef="Locale">
+        <th mat-header-cell *matHeaderCellDef> Locale </th>
+        <td mat-cell *matCellDef="let fingerprint" class='m-card-sub-title' data-label='Locale'>
+          {{fingerprint.locale}} </td>
+      </ng-container>
+        &lt;!&ndash; Weight Column &ndash;&gt;
+      <ng-container matColumnDef="Calendar">
+        <th mat-header-cell *matHeaderCellDef> Calendar </th>
+        <td mat-cell *matCellDef="let fingerprint" class='has_label_on_mobile' data-label='Calendar'>
+          {{fingerprint.calendar}} </td>
+      </ng-container>
+      <ng-container matColumnDef="NumberingSystem">
+        <th mat-header-cell *matHeaderCellDef> Numbering System </th>
+        <td mat-cell *matCellDef="let fingerprint" class='has_label_on_mobile' data-label='NumberingSystem'>
+          {{fingerprint.numberingSystem}} </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+  </div>
+</div>-->
+
+
+
+<mat-table [dataSource]="dataSource" class="col-8">
+  <ng-container matColumnDef="User Agent">
+    <mat-header-cell *matHeaderCellDef>{{this.constants.USER_AGENT}}</mat-header-cell>
     <mat-cell *matCellDef="let fingerprint">{{this.fingerprint.userAgent}}</mat-cell>
+  </ng-container>
+  <ng-container matColumnDef="Locale">
+    <mat-header-cell *matHeaderCellDef>{{this.constants.LOCALE}}</mat-header-cell>
+    <mat-cell *matCellDef="let fingerprint">{{this.fingerprint.locale}}</mat-cell>
+  </ng-container>
+  <ng-container matColumnDef="Calendar">
+    <mat-header-cell *matHeaderCellDef>{{this.constants.CALENDAR}}</mat-header-cell>
+    <mat-cell *matCellDef="let fingerprint">{{this.fingerprint.calendar}}</mat-cell>
+  </ng-container>
+  <ng-container matColumnDef="Time Zone">
+    <mat-header-cell *matHeaderCellDef>{{this.constants.TIMEZONE}}</mat-header-cell>
+    <mat-cell *matCellDef="let fingerprint">{{this.fingerprint.timeZone}}</mat-cell>
+  </ng-container>
+  <ng-container matColumnDef="Navigator Type">
+    <mat-header-cell *matHeaderCellDef>{{this.constants.NAVIGATOR_TYPE}}</mat-header-cell>
+    <mat-cell *matCellDef="let fingerprint">{{this.fingerprint.navigatorType}}</mat-cell>
+  </ng-container>
+  <ng-container matColumnDef="Numbering System">
+    <mat-header-cell *matHeaderCellDef>{{this.constants.NUMBERING_SYSTEM}}</mat-header-cell>
+    <mat-cell *matCellDef="let fingerprint">{{this.fingerprint.numberingSystem}}</mat-cell>
+  </ng-container>
+  <ng-container matColumnDef="Platform Type">
+    <mat-header-cell *matHeaderCellDef>{{this.constants.PLATFORM_TYPE}}</mat-header-cell>
+    <mat-cell *matCellDef="let fingerprint">{{this.fingerprint.platformType}}</mat-cell>
   </ng-container>
   <ng-container>
     <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
