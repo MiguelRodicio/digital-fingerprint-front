@@ -1,4 +1,4 @@
-import {Component, OnInit, Renderer2} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {FingerprintService} from "../../services/fingerprint.service";
 import {Constants} from "../../constants/constants";
 import {Subject} from "rxjs";
@@ -18,7 +18,13 @@ export class FingerprintComponent implements OnInit {
     connection: '',
     adblock: '',
     keyboardLayout: '',
-    cookiesEnabled: false
+    cookiesEnabled: false,
+    deviceMemory: '',
+    screenWidth: '',
+    screenHeight: '',
+    gyroscope: '',
+    accelerometer: '',
+    hardwareConcurrency: 0
   };
   public dataSource : any[] = [];
   public displayedColumns: any[] =
@@ -36,8 +42,7 @@ export class FingerprintComponent implements OnInit {
 
   constructor (
     private fingerprintService: FingerprintService,
-    public constants: Constants,
-    private renderer: Renderer2
+    public constants: Constants
   ) {}
 
 
@@ -148,10 +153,10 @@ export class FingerprintComponent implements OnInit {
     detectAnyAdblocker().then((detected: string) => {
       if(detected && this.javascriptAttributes?.adblock != undefined){
         // an adblocker is detected
-         this.javascriptAttributes.adblock = "Yes";
+         return this.javascriptAttributes.adblock = "Yes";
       }
       // @ts-ignore
-        this.javascriptAttributes.adblock = "Does not have adblock";
+       return this.javascriptAttributes.adblock = "Does not have adblock";
     });
   }
 
@@ -163,17 +168,52 @@ export class FingerprintComponent implements OnInit {
 
   public hasCookiesEnabled() {
     if(this.javascriptAttributes?.cookiesEnabled != undefined) {
-      this.javascriptAttributes.cookiesEnabled = window.navigator.cookieEnabled;
-    }
+      return this.javascriptAttributes.cookiesEnabled = window.navigator.cookieEnabled;
+    } return { error: 'Error'}
+  }
+
+  public screenSize() {
+    if((this.javascriptAttributes?.screenWidth != undefined) && (this.javascriptAttributes?.screenHeight != undefined)){
+      this.javascriptAttributes.screenWidth = screen.width.toString();
+      this.javascriptAttributes.screenHeight = screen.height.toString();
+      return this.javascriptAttributes.screenWidth.concat("x" + this.javascriptAttributes.screenHeight);
+    } return { error: 'Error'};
+  }
+
+  public gyroscope() {
+    let gyroscope = 'No';
+    if(this.javascriptAttributes?.gyroscope != undefined) {
+      window.addEventListener("devicemotion", function(event){
+        if(event.rotationRate?.alpha || event.rotationRate?.beta || event.rotationRate?.gamma)
+          gyroscope = 'Yes';
+      });
+      return this.javascriptAttributes.gyroscope = gyroscope;
+    } return { error : 'Error'};
   }
 
   public deviceMemory() {
     //const deviceMemory = window.navigator.deviceMemory;
-    const devMem = (window.navigator as any).deviceMemory;
-    console.log(devMem)
+    const deviceMemory = (window.navigator as any).deviceMemory;
+    if(this.javascriptAttributes?.deviceMemory != undefined){
+      return this.javascriptAttributes.deviceMemory = deviceMemory;
+    } return { error: 'Error'};
+  }
 
+  public accelerometer() {
+    let accelerometer = 'No'
+    if(this.javascriptAttributes?.accelerometer != undefined){
+      window.addEventListener("devicemotion", function(event){
+        if(event.acceleration?.x || event.acceleration?.y || event.acceleration?.z)
+          accelerometer = 'Yes';
+      });
+      return this.javascriptAttributes.accelerometer = accelerometer;
+    } return { error: 'Error'};
+  }
 
-
+  public hardwareConcurrency() {
+    if(this.javascriptAttributes?.hardwareConcurrency != undefined){
+      return this.javascriptAttributes.hardwareConcurrency = navigator.hardwareConcurrency;
+    } return { error: 'Error'}
   }
 
 
@@ -185,6 +225,11 @@ export class FingerprintComponent implements OnInit {
     this.hasAdBlock();
     this.hasCookiesEnabled();
     this.deviceMemory();
+    this.screenSize();
+    this.gyroscope();
+    this.accelerometer();
+    this.hardwareConcurrency();
+    console.log(this.javascriptAttributes)
     //this.getKeyboardLayout();
 
 

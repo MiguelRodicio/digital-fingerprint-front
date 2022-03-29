@@ -34,6 +34,6 @@ export class JavascriptAttributes {
   public screenHeight?: string;
   public gyroscope?: string;
   public accelerometer?: string;
-  public hardwareConcurrency?: string;
+  public hardwareConcurrency?: number;
   public battery?: string;
 }
