@@ -2,7 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {FingerprintService} from "../../services/fingerprint.service";
 import {Constants} from "../../constants/constants";
 import {Subject} from "rxjs";
-import {Fingerprint, JavascriptAttributes} from "../../models/fingerprint.model";
+import {HttpHeaderAttributes, JavascriptAttributes, Fingerprint} from "../../models/fingerprint.model";
 //Module on decs.d.ts
 import { detectAnyAdblocker } from "just-detect-adblock";
 
@@ -13,12 +13,13 @@ import { detectAnyAdblocker } from "just-detect-adblock";
 })
 export class FingerprintComponent implements OnInit {
 
-  private javascriptAttributes?: JavascriptAttributes = {
+  private javascriptAttributes: JavascriptAttributes = {
+    navigatorType: '',
     webRenderer: '',
     connection: '',
     adblock: '',
     keyboardLayout: '',
-    cookiesEnabled: false,
+    cookiesEnabled: '',
     deviceMemory: '',
     screenWidth: '',
     screenHeight: '',
@@ -26,6 +27,18 @@ export class FingerprintComponent implements OnInit {
     accelerometer: '',
     hardwareConcurrency: 0
   };
+
+  private httpHeaderAttributes: HttpHeaderAttributes = {
+    userAgent: '',
+    accept: '',
+    contentEncoding: '',
+    contentLanguage: ''
+  }
+
+  private fingerprint: Fingerprint = {
+    id: 0
+  }
+
   public dataSource : any[] = [];
   public displayedColumns: any[] =
     [
@@ -36,7 +49,6 @@ export class FingerprintComponent implements OnInit {
       this.constants.CALENDAR,
       this.constants.NUMBERING_SYSTEM
     ];
-  public fingerprint?: Fingerprint;
 
   private unsubscribe: Subject<any> = new Subject();
 
@@ -78,33 +90,33 @@ export class FingerprintComponent implements OnInit {
   public loadInitialData(){
 
     const usrAgent = navigator.userAgent;
-    this.fingerprintService.navigatorType = (usrAgent.indexOf("Edg") > -1) ? "Microsoft Edge (Chromium)" :
-      (usrAgent.indexOf("Firefox") > -1) ? "Mozilla Firefox" : (usrAgent.indexOf("Opera") > -1) ? "Opera" :
-        (usrAgent.indexOf("Trident") > -1) ? "Microsoft Internet Explorer" :
-          (usrAgent.indexOf("Edge") > -1) ? "Microsoft Edge (Legacy)" :
-            (usrAgent.indexOf("Chrome") > -1) ? "Google Chrome" :
-              (usrAgent.indexOf("Safari") > -1) ? "Safari" : "unknown";
+    if(this.javascriptAttributes?.navigatorType != undefined){
+      this.javascriptAttributes.navigatorType = (usrAgent.indexOf("Edg") > -1) ? "Microsoft Edge (Chromium)" :
+        (usrAgent.indexOf("Firefox") > -1) ? "Mozilla Firefox" : (usrAgent.indexOf("Opera") > -1) ? "Opera" :
+          (usrAgent.indexOf("Trident") > -1) ? "Microsoft Internet Explorer" :
+            (usrAgent.indexOf("Edge") > -1) ? "Microsoft Edge (Legacy)" :
+              (usrAgent.indexOf("Chrome") > -1) ? "Google Chrome" :
+                (usrAgent.indexOf("Safari") > -1) ? "Safari" : "unknown";
+    }
 
-    this.fingerprintService.userAgent = navigator.userAgent;
-    this.fingerprintService.timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    this.fingerprintService.locale = Intl.DateTimeFormat().resolvedOptions().locale;
-    this.fingerprintService.calendar = Intl.DateTimeFormat().resolvedOptions().calendar;
-    this.fingerprintService.numberingSystem = Intl.DateTimeFormat().resolvedOptions().numberingSystem;
-    this.fingerprintService.platformType = window.navigator.platform;
-
-    return this.dataSource.push(this.fingerprintService);
+    this.httpHeaderAttributes.userAgent = navigator.userAgent;
+    this.javascriptAttributes.timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    this.javascriptAttributes.locale = Intl.DateTimeFormat().resolvedOptions().locale;
+    this.javascriptAttributes.calendar = Intl.DateTimeFormat().resolvedOptions().calendar;
+    this.javascriptAttributes.numberingSystem = Intl.DateTimeFormat().resolvedOptions().numberingSystem;
+    this.javascriptAttributes.platformType = window.navigator.platform;
   }
 
   saveFingerprint(): void {
     const data = {
-      id: this.fingerprintService.id,
-      navigatorType: this.fingerprintService.navigatorType,
-      userAgent: this.fingerprintService.userAgent,
-      timeZone: this.fingerprintService.timeZone,
-      locale: this.fingerprintService.locale,
-      calendar: this.fingerprintService.calendar,
-      numberingSystem: this.fingerprintService.numberingSystem,
-      platformType: this.fingerprintService.platformType
+      //id: this.fingerprint.id,
+      navigatorType: this.javascriptAttributes.navigatorType,
+      userAgent: this.httpHeaderAttributes.userAgent,
+      timeZone: this.javascriptAttributes.timeZone,
+      locale: this.javascriptAttributes.locale,
+      calendar: this.javascriptAttributes.calendar,
+      numberingSystem: this.javascriptAttributes.numberingSystem,
+      platformType: this.javascriptAttributes.platformType
     };
     this.fingerprintService.getAllFingerprints()
       .subscribe({
@@ -143,10 +155,10 @@ export class FingerprintComponent implements OnInit {
   }
 
   public getJavascriptAttributesData(){
-    const connection = window.navigator.connection;
     if(this.javascriptAttributes?.connection!=undefined){
-      this.javascriptAttributes.connection = connection;
+      return this.javascriptAttributes.connection = window.navigator.connection;
     }
+    return { error: 'Error'}
   }
 
   public hasAdBlock(){
@@ -168,7 +180,7 @@ export class FingerprintComponent implements OnInit {
 
   public hasCookiesEnabled() {
     if(this.javascriptAttributes?.cookiesEnabled != undefined) {
-      return this.javascriptAttributes.cookiesEnabled = window.navigator.cookieEnabled;
+      return this.javascriptAttributes.cookiesEnabled = window.navigator.cookieEnabled.toString();
     } return { error: 'Error'}
   }
 
@@ -218,10 +230,11 @@ export class FingerprintComponent implements OnInit {
 
 
   ngOnInit(): void {
+    this.dataSource.push(this.javascriptAttributes)
     this.loadInitialData();
     this.saveFingerprint();
     this.getJavascriptAttributesData();
-    this.getVideoCardInfo();
+    console.log(this.getVideoCardInfo());
     this.hasAdBlock();
     this.hasCookiesEnabled();
     this.deviceMemory();

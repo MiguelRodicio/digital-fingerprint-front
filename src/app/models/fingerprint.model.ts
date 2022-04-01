@@ -1,8 +1,7 @@
 export class Fingerprint{
 
   public id?: number;
-  public httpHeaderAttributesList?: HttpHeaderAttributes [];
-  public javascriptAttributesList: JavascriptAttributes[] | undefined;
+
 
 }
 
@@ -26,7 +25,7 @@ export class JavascriptAttributes {
   public adblock?: string;
   public keyboardLayout?: string;
   public videoFormats?: string;
-  public cookiesEnabled?: boolean;
+  public cookiesEnabled?: string;
   public platformType?: string;
   public deviceMemory?: string;
   public timeZone?: string;

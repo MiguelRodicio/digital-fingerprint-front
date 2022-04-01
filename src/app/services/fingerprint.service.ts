@@ -14,14 +14,14 @@ export class FingerprintService {
   javascriptAttributeList?: JavascriptAttributes;
   //javascriptAttributes?: string;
   //httpAttributes:? string;
-  id?: number;
+/*  id?: number;
   navigatorType?: string;
   timeZone?: string
   userAgent?: string;
   locale?: string;
   calendar?: string;
   numberingSystem?: string;
-  platformType?: string;
+  platformType?: string;*/
 
   constructor(
     private http: HttpClient
