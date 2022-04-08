@@ -11,7 +11,7 @@ const baseUrl = 'http://localhost:8080';
 export class FingerprintService {
 
   fingerprint?:Fingerprint;
-  javascriptAttributeList?: JavascriptAttributes;
+
   //javascriptAttributes?: string;
   //httpAttributes:? string;
 /*  id?: number;
@@ -38,12 +38,8 @@ export class FingerprintService {
   }
 
 
-  createFingerprint(data: any, options?:any): Observable<any>{
-    return this.http.post(baseUrl, data,{
-      headers: new HttpHeaders({
-        "Content-Type": "application/json; charset=utf-8"
-      })
-    });
+  createFingerprint(data: any): Observable<any>{
+    return this.http.post<any>('api/fingerprint', data);
   }
 
   getFingerprint(id: any): Observable<any>{
@@ -51,7 +47,8 @@ export class FingerprintService {
   }
 
   getAllFingerprints(): Observable<any>{
-    return this.http.get(baseUrl);
+    return this.http.get('/api/fingerprint');
+
   }
 
   deleteFingerprint(id: any): Observable<any> {

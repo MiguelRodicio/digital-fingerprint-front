@@ -1,0 +1,20 @@
+{
+  "fingerprint": {
+    "navigatorType": "Google Chrome",
+    "locale": "es-ES",
+    "calendar": "gregory",
+    "numberingSystem": "latn",
+    "connection": {},
+    "webRenderer": {},
+    "adblock": "",
+    "cookiesEnabled": "true",
+    "platformType": "Win32",
+    "deviceMemory": 4,
+    "timeZone": "Europe/Madrid",
+    "screenWidth": "1366",
+    "screenHeight": "768",
+    "gyroscope": "No",
+    "accelerometer": "No",
+    "hardwareConcurrency": 4
+  }
+}

@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {FingerprintService} from "../../services/fingerprint.service";
 import {Constants} from "../../constants/constants";
-import {Subject} from "rxjs";
+import {Subject, from} from "rxjs";
 import {HttpHeaderAttributes, JavascriptAttributes, Fingerprint} from "../../models/fingerprint.model";
 //Module on decs.d.ts
 import { detectAnyAdblocker } from "just-detect-adblock";
@@ -13,7 +13,7 @@ import { detectAnyAdblocker } from "just-detect-adblock";
 })
 export class FingerprintComponent implements OnInit {
 
-  private javascriptAttributes: JavascriptAttributes = {
+  private javascriptAttributesList: JavascriptAttributes = {
     navigatorType: '',
     webRenderer: '',
     connection: '',
@@ -25,7 +25,8 @@ export class FingerprintComponent implements OnInit {
     screenHeight: '',
     gyroscope: '',
     accelerometer: '',
-    hardwareConcurrency: 0
+    hardwareConcurrency: 0,
+    battery: '',
   };
 
   private httpHeaderAttributes: HttpHeaderAttributes = {
@@ -90,8 +91,8 @@ export class FingerprintComponent implements OnInit {
   public loadInitialData(){
 
     const usrAgent = navigator.userAgent;
-    if(this.javascriptAttributes?.navigatorType != undefined){
-      this.javascriptAttributes.navigatorType = (usrAgent.indexOf("Edg") > -1) ? "Microsoft Edge (Chromium)" :
+    if(this.javascriptAttributesList?.navigatorType != undefined){
+      this.javascriptAttributesList.navigatorType = (usrAgent.indexOf("Edg") > -1) ? "Microsoft Edge (Chromium)" :
         (usrAgent.indexOf("Firefox") > -1) ? "Mozilla Firefox" : (usrAgent.indexOf("Opera") > -1) ? "Opera" :
           (usrAgent.indexOf("Trident") > -1) ? "Microsoft Internet Explorer" :
             (usrAgent.indexOf("Edge") > -1) ? "Microsoft Edge (Legacy)" :
@@ -100,25 +101,35 @@ export class FingerprintComponent implements OnInit {
     }
 
     this.httpHeaderAttributes.userAgent = navigator.userAgent;
-    this.javascriptAttributes.timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    this.javascriptAttributes.locale = Intl.DateTimeFormat().resolvedOptions().locale;
-    this.javascriptAttributes.calendar = Intl.DateTimeFormat().resolvedOptions().calendar;
-    this.javascriptAttributes.numberingSystem = Intl.DateTimeFormat().resolvedOptions().numberingSystem;
-    this.javascriptAttributes.platformType = window.navigator.platform;
+    this.javascriptAttributesList.timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    this.javascriptAttributesList.locale = Intl.DateTimeFormat().resolvedOptions().locale;
+    this.javascriptAttributesList.calendar = Intl.DateTimeFormat().resolvedOptions().calendar;
+    this.javascriptAttributesList.numberingSystem = Intl.DateTimeFormat().resolvedOptions().numberingSystem;
+    this.javascriptAttributesList.platformType = window.navigator.platform;
   }
 
   saveFingerprint(): void {
     const data = {
       //id: this.fingerprint.id,
-      navigatorType: this.javascriptAttributes.navigatorType,
-      userAgent: this.httpHeaderAttributes.userAgent,
-      timeZone: this.javascriptAttributes.timeZone,
-      locale: this.javascriptAttributes.locale,
-      calendar: this.javascriptAttributes.calendar,
-      numberingSystem: this.javascriptAttributes.numberingSystem,
-      platformType: this.javascriptAttributes.platformType
+      navigatorType: this.javascriptAttributesList.navigatorType,
+      locale: this.javascriptAttributesList.locale,
+      calendar: this.javascriptAttributesList.calendar,
+      numberingSystem: this.javascriptAttributesList.numberingSystem,
+      connection: this.javascriptAttributesList.connection,
+      webRenderer: this.javascriptAttributesList.webRenderer,
+      adblock: this.javascriptAttributesList.adblock,
+      cookiesEnabled: this.javascriptAttributesList.cookiesEnabled,
+      platformType: this.javascriptAttributesList.platformType,
+      deviceMemory: this.javascriptAttributesList.deviceMemory,
+      timeZone: this.javascriptAttributesList.timeZone,
+      screenWidth: this.javascriptAttributesList.screenWidth,
+      screenHeight: this.javascriptAttributesList.screenHeight,
+      gyroscope: this.javascriptAttributesList.gyroscope,
+      accelerometer: this.javascriptAttributesList.accelerometer,
+      hardwareConcurrency: this.javascriptAttributesList.hardwareConcurrency,
+      battery: this.javascriptAttributesList.battery
     };
-    this.fingerprintService.getAllFingerprints()
+    this.fingerprintService.createFingerprint(data)
       .subscribe({
         next:(res)=>{
           console.log(res);
@@ -142,11 +153,11 @@ export class FingerprintComponent implements OnInit {
         error: "no webgl",
       };
     }
-    if(this.javascriptAttributes?.webRenderer != undefined){
-      this.javascriptAttributes.webRenderer = gl.getExtension('WEBGL_debug_renderer_info');
-      return this.javascriptAttributes.webRenderer ? {
-        vendor: gl.getParameter(this.javascriptAttributes.webRenderer.UNMASKED_VENDOR_WEBGL),
-        renderer:  gl.getParameter(this.javascriptAttributes.webRenderer.UNMASKED_RENDERER_WEBGL),
+    if(this.javascriptAttributesList?.webRenderer != undefined){
+      this.javascriptAttributesList.webRenderer = gl.getExtension('WEBGL_debug_renderer_info');
+      return this.javascriptAttributesList.webRenderer ? {
+        vendor: gl.getParameter(this.javascriptAttributesList.webRenderer.UNMASKED_VENDOR_WEBGL),
+        renderer:  gl.getParameter(this.javascriptAttributesList.webRenderer.UNMASKED_RENDERER_WEBGL),
       } : {
         error: "no WEBGL_debug_renderer_info",
       };
@@ -155,94 +166,94 @@ export class FingerprintComponent implements OnInit {
   }
 
   public getJavascriptAttributesData(){
-    if(this.javascriptAttributes?.connection!=undefined){
-      return this.javascriptAttributes.connection = window.navigator.connection;
+    if(this.javascriptAttributesList?.connection!=undefined){
+      return this.javascriptAttributesList.connection = window.navigator.connection;
     }
     return { error: 'Error'}
   }
 
-  public hasAdBlock(){
-    detectAnyAdblocker().then((detected: string) => {
-      if(detected && this.javascriptAttributes?.adblock != undefined){
-        // an adblocker is detected
-         return this.javascriptAttributes.adblock = "Yes";
+  public hasAdBlock(): any{
+    const observable = from(detectAnyAdblocker());
+    detectAnyAdblocker().then((detected: any) => {
+      if(detected){
+        return this.javascriptAttributesList.adblock = "Yes";
       }
-      // @ts-ignore
-       return this.javascriptAttributes.adblock = "Does not have adblock";
+      return this.javascriptAttributesList.adblock = "No";
     });
   }
 
   //TODO
   /* public getKeyboardLayout(){
     const keyboard = (navigator as any).keyboard;
-    //return this.javascriptAttributes.keyboardLayout = keyboard.getLayoutMap();
+    //return this.javascriptAttributesList.keyboardLayout = keyboard.getLayoutMap();
   }*/
 
   public hasCookiesEnabled() {
-    if(this.javascriptAttributes?.cookiesEnabled != undefined) {
-      return this.javascriptAttributes.cookiesEnabled = window.navigator.cookieEnabled.toString();
+    if(this.javascriptAttributesList?.cookiesEnabled != undefined) {
+      return this.javascriptAttributesList.cookiesEnabled = window.navigator.cookieEnabled.toString();
     } return { error: 'Error'}
   }
 
   public screenSize() {
-    if((this.javascriptAttributes?.screenWidth != undefined) && (this.javascriptAttributes?.screenHeight != undefined)){
-      this.javascriptAttributes.screenWidth = screen.width.toString();
-      this.javascriptAttributes.screenHeight = screen.height.toString();
-      return this.javascriptAttributes.screenWidth.concat("x" + this.javascriptAttributes.screenHeight);
+    if((this.javascriptAttributesList?.screenWidth != undefined) && (this.javascriptAttributesList?.screenHeight != undefined)){
+      this.javascriptAttributesList.screenWidth = screen.width.toString();
+      this.javascriptAttributesList.screenHeight = screen.height.toString();
+      return this.javascriptAttributesList.screenWidth.concat("x" + this.javascriptAttributesList.screenHeight);
     } return { error: 'Error'};
   }
 
   public gyroscope() {
     let gyroscope = 'No';
-    if(this.javascriptAttributes?.gyroscope != undefined) {
+    if(this.javascriptAttributesList?.gyroscope != undefined) {
       window.addEventListener("devicemotion", function(event){
         if(event.rotationRate?.alpha || event.rotationRate?.beta || event.rotationRate?.gamma)
           gyroscope = 'Yes';
       });
-      return this.javascriptAttributes.gyroscope = gyroscope;
+      return this.javascriptAttributesList.gyroscope = gyroscope;
     } return { error : 'Error'};
   }
 
   public deviceMemory() {
     //const deviceMemory = window.navigator.deviceMemory;
     const deviceMemory = (window.navigator as any).deviceMemory;
-    if(this.javascriptAttributes?.deviceMemory != undefined){
-      return this.javascriptAttributes.deviceMemory = deviceMemory;
+    if(this.javascriptAttributesList?.deviceMemory != undefined){
+      return this.javascriptAttributesList.deviceMemory = deviceMemory;
     } return { error: 'Error'};
   }
 
   public accelerometer() {
     let accelerometer = 'No'
-    if(this.javascriptAttributes?.accelerometer != undefined){
+    if(this.javascriptAttributesList?.accelerometer != undefined){
       window.addEventListener("devicemotion", function(event){
         if(event.acceleration?.x || event.acceleration?.y || event.acceleration?.z)
           accelerometer = 'Yes';
       });
-      return this.javascriptAttributes.accelerometer = accelerometer;
+      return this.javascriptAttributesList.accelerometer = accelerometer;
     } return { error: 'Error'};
   }
 
   public hardwareConcurrency() {
-    if(this.javascriptAttributes?.hardwareConcurrency != undefined){
-      return this.javascriptAttributes.hardwareConcurrency = navigator.hardwareConcurrency;
+    if(this.javascriptAttributesList?.hardwareConcurrency != undefined){
+      return this.javascriptAttributesList.hardwareConcurrency = navigator.hardwareConcurrency;
     } return { error: 'Error'}
   }
 
 
   ngOnInit(): void {
-    this.dataSource.push(this.javascriptAttributes)
+    this.dataSource.push(this.javascriptAttributesList)
     this.loadInitialData();
-    this.saveFingerprint();
     this.getJavascriptAttributesData();
     console.log(this.getVideoCardInfo());
-    this.hasAdBlock();
+    console.log(this.hasAdBlock());
     this.hasCookiesEnabled();
+    this.hasAdBlock();
     this.deviceMemory();
     this.screenSize();
     this.gyroscope();
     this.accelerometer();
     this.hardwareConcurrency();
-    console.log(this.javascriptAttributes)
+    this.saveFingerprint();
+    //console.log(this.fingerprintService.getAllFingerprints())
     //this.getKeyboardLayout();
 
 

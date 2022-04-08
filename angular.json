@@ -73,11 +73,11 @@
           "configurations": {
             "production": {
               "browserTarget": "front-digital-fingerprint:build:production",
-              "proxyConfig": "src/proxy.config.json"
+              "proxyConfig": "src/proxy.conf.json"
             },
             "development": {
               "browserTarget": "front-digital-fingerprint:build:development",
-              "proxyConfig": "src/proxy.config.json"
+              "proxyConfig": "src/proxy.conf.json"
             }
           },
           "defaultConfiguration": "development"
