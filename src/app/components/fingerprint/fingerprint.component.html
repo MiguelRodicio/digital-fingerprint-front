@@ -1,3 +1,59 @@
+<div class="container-fluid">
+  <mat-checkbox
+  [(ngModel)]="allCompleted"
+  >
+    Select All
+  </mat-checkbox>
+  <br>
+
+  <mat-checkbox
+  >
+    {{this.constants.USER_AGENT}}
+  </mat-checkbox>
+  <br>
+
+  <mat-checkbox
+  >
+    {{this.constants.PLATFORM_TYPE}}
+  </mat-checkbox>
+</div>
+
+<div class="container-fluid">
+  <table>
+    <tr>
+      <th>{{this.constants.ATTRIBUTE_TYPE}}</th>
+      <th>{{this.constants.VALUE}}</th>
+    </tr>
+    <tr>
+      <td>{{this.constants.USER_AGENT}}</td>
+      <td>{{this.httpHeaderAttributes.userAgent}}</td>
+    </tr>
+    <tr>
+      <td>{{this.constants.NAVIGATOR_TYPE}}</td>
+      <td>{{this.javascriptAttributesList.navigatorType}}</td>
+    </tr>
+    <tr>
+      <td>{{this.constants.TIMEZONE}}</td>
+      <td>{{this.javascriptAttributesList.timeZone}}</td>
+    </tr>
+    <tr>
+      <td>{{this.constants.LOCALE}}</td>
+      <td>{{this.javascriptAttributesList.locale}}</td>
+    </tr>
+    <tr>
+      <td>{{this.constants.CALENDAR}}</td>
+      <td>{{this.javascriptAttributesList.calendar}}</td>
+    </tr>
+    <tr>
+      <td>{{this.constants.NUMBERING_SYSTEM}}</td>
+      <td>{{this.javascriptAttributesList.numberingSystem}}</td>
+    </tr>
+    <tr>
+      <td>{{this.constants.PLATFORM_TYPE}}</td>
+      <td>{{this.javascriptAttributesList.platformType}}</td>
+    </tr>
+  </table>
+</div>
 
 
 
@@ -105,7 +161,7 @@
 
 
 
-<mat-table [dataSource]="dataSource" class="col-8">
+<!--<mat-table [dataSource]="dataSource" class="col-8">
   <ng-container matColumnDef="User Agent">
     <mat-header-cell *matHeaderCellDef>{{this.constants.USER_AGENT}}</mat-header-cell>
     <mat-cell *matCellDef="let fingerprint">{{this.fingerprint.userAgent}}</mat-cell>
@@ -138,7 +194,7 @@
     <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
       <mat-row *matRowDef="let columns; columns: displayedColumns"></mat-row>
   </ng-container>
-</mat-table>
+</mat-table>-->
 
 
 <!--<mat-card class="col-4">

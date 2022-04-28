@@ -6,7 +6,6 @@
     "numberingSystem": "latn",
     "connection": {},
     "webRenderer": {},
-    "adblock": "",
     "cookiesEnabled": "true",
     "platformType": "Win32",
     "deviceMemory": 4,
@@ -15,6 +14,7 @@
     "screenHeight": "768",
     "gyroscope": "No",
     "accelerometer": "No",
-    "hardwareConcurrency": 4
+    "hardwareConcurrency": 4,
+    "battery": ""
   }
 }

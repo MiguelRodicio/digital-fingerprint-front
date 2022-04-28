@@ -13,7 +13,10 @@ import { detectAnyAdblocker } from "just-detect-adblock";
 })
 export class FingerprintComponent implements OnInit {
 
-  private javascriptAttributesList: JavascriptAttributes = {
+  public completed: boolean = false;
+  public allCompleted: boolean = false;
+
+  public javascriptAttributesList: JavascriptAttributes = {
     navigatorType: '',
     webRenderer: '',
     connection: '',
@@ -29,7 +32,7 @@ export class FingerprintComponent implements OnInit {
     battery: '',
   };
 
-  private httpHeaderAttributes: HttpHeaderAttributes = {
+  public httpHeaderAttributes: HttpHeaderAttributes = {
     userAgent: '',
     accept: '',
     contentEncoding: '',
@@ -40,18 +43,19 @@ export class FingerprintComponent implements OnInit {
     id: 0
   }
 
-  public dataSource : any[] = [];
+
+  /*public dataSource : any[] = [];
   public displayedColumns: any[] =
     [
-     /* this.constants.ATTRIBUTE_TYPE,
-      this.constants.VALUE,*/
+     /!* this.constants.ATTRIBUTE_TYPE,
+      this.constants.VALUE,*!/
       this.constants.USER_AGENT,
       this.constants.LOCALE,
       this.constants.CALENDAR,
       this.constants.NUMBERING_SYSTEM
-    ];
+    ];*/
 
-  private unsubscribe: Subject<any> = new Subject();
+  /*private unsubscribe: Subject<any> = new Subject();*/
 
   constructor (
     private fingerprintService: FingerprintService,
@@ -59,6 +63,10 @@ export class FingerprintComponent implements OnInit {
   ) {}
 
 
+  public setAllChecked() {
+    this.allCompleted = true;
+
+  }
 /*  public getNavigatorType() {
     const usrAgent = navigator.userAgent;
     return this._fingerprintService.navigatorType = (usrAgent.indexOf("Edg") > -1) ? "Microsoft Edge (Chromium)" :
@@ -108,9 +116,12 @@ export class FingerprintComponent implements OnInit {
     this.javascriptAttributesList.platformType = window.navigator.platform;
   }
 
-  saveFingerprint(): void {
+  public async saveFingerprint(){
+    if(this.javascriptAttributesList.adblock!=undefined){
+      this.javascriptAttributesList.adblock = await this.hasAdBlock();
+    }
     const data = {
-      //id: this.fingerprint.id,
+      id: this.fingerprint.id,
       navigatorType: this.javascriptAttributesList.navigatorType,
       locale: this.javascriptAttributesList.locale,
       calendar: this.javascriptAttributesList.calendar,
@@ -171,14 +182,13 @@ export class FingerprintComponent implements OnInit {
     }
     return { error: 'Error'}
   }
-
-  public hasAdBlock(): any{
-    const observable = from(detectAnyAdblocker());
-    detectAnyAdblocker().then((detected: any) => {
-      if(detected){
-        return this.javascriptAttributesList.adblock = "Yes";
+  //TODO
+  public async hasAdBlock(){
+     detectAnyAdblocker().then((detected: any) => {
+      if (detected) {
+        this.javascriptAttributesList.adblock = "Yes";
       }
-      return this.javascriptAttributesList.adblock = "No";
+      this.javascriptAttributesList.adblock = "No";
     });
   }
 
@@ -240,13 +250,12 @@ export class FingerprintComponent implements OnInit {
 
 
   ngOnInit(): void {
-    this.dataSource.push(this.javascriptAttributesList)
+    /*this.dataSource.push(this.javascriptAttributesList)*/
     this.loadInitialData();
     this.getJavascriptAttributesData();
-    console.log(this.getVideoCardInfo());
+    this.getVideoCardInfo();
     console.log(this.hasAdBlock());
     this.hasCookiesEnabled();
-    this.hasAdBlock();
     this.deviceMemory();
     this.screenSize();
     this.gyroscope();

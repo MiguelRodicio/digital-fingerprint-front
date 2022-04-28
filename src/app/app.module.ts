@@ -9,11 +9,13 @@ import { NavbarComponent } from './components/navbar/navbar.component';
 import {MatToolbarModule} from "@angular/material/toolbar";
 import {Constants} from "./constants/constants";
 import {HttpClientModule} from "@angular/common/http";
+import { CheckboxComponent } from './components/checkbox/checkbox.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    NavbarComponent
+    NavbarComponent,
+    CheckboxComponent
   ],
   imports: [
     BrowserModule,

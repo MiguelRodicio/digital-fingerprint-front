@@ -7,6 +7,8 @@ import {MatSidenavModule} from "@angular/material/sidenav";
 import {MatToolbarModule} from "@angular/material/toolbar";
 import {MatCardModule} from "@angular/material/card";
 import {MatTableModule} from "@angular/material/table";
+import {MatCheckboxModule} from "@angular/material/checkbox";
+import {FormsModule} from "@angular/forms";
 
 
 
@@ -24,7 +26,9 @@ import {MatTableModule} from "@angular/material/table";
     MatSidenavModule,
     MatToolbarModule,
     MatCardModule,
-    MatTableModule
+    MatTableModule,
+    MatCheckboxModule,
+    FormsModule
   ]
 })
 export class FingerprintModule { }

@@ -2,8 +2,8 @@ import {Injectable} from "@angular/core";
 
 @Injectable()
 export class Constants {
-  //VALUE = "Value";
-  //ATTRIBUTE_TYPE = "Attribute Type";
+  VALUE = "Value";
+  ATTRIBUTE_TYPE = "Attribute Type";
   USER_AGENT = "User Agent";
   NAVIGATOR_TYPE = "Navigator Type";
   TIMEZONE = "Time Zone";

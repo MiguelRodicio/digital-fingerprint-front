@@ -22,7 +22,7 @@ export class JavascriptAttributes {
   public connection?: any;
   public webRenderer?: any;
   public javascriptContentLanguage?: string;
-  public adblock?: string;
+  public adblock?: any;
   public keyboardLayout?: string;
   public videoFormats?: string;
   public cookiesEnabled?: string;
