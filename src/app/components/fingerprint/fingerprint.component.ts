@@ -1,8 +1,14 @@
 import {Component, OnInit} from '@angular/core';
 import {FingerprintService} from "../../services/fingerprint.service";
 import {Constants} from "../../constants/constants";
-import {Subject, from} from "rxjs";
-import {HttpHeaderAttributes, JavascriptAttributes, Fingerprint} from "../../models/fingerprint.model";
+import {Subject, from, takeUntil} from "rxjs";
+import {
+  HttpHeaderAttributes,
+  JavascriptAttributes,
+  Fingerprint,
+  IpAddressAttributes,
+  LocationAttributes
+} from "../../models/fingerprint.model";
 //Module on decs.d.ts
 import { detectAnyAdblocker } from "just-detect-adblock";
 
@@ -15,6 +21,7 @@ export class FingerprintComponent implements OnInit {
 
   public completed: boolean = false;
   public allCompleted: boolean = false;
+  private unsubscribe: Subject<any> = new Subject();
 
   public javascriptAttributesList: JavascriptAttributes = {
     navigatorType: '',
@@ -29,8 +36,26 @@ export class FingerprintComponent implements OnInit {
     gyroscope: '',
     accelerometer: '',
     hardwareConcurrency: 0,
-    battery: '',
+    //battery: '',
+    screen: undefined
   };
+
+  public ipAddressAttributes: IpAddressAttributes = {
+    ipAddress: '',
+    ipv6Address: '',
+    hostname: '',
+    protocol: '',
+    ipAddressLocation: '',
+    localIpAddress: '',
+    publicIpAddress: '',
+    dnsServers: '',
+    //mtu: 0,
+    //hops: 0,
+    ipCountry: '',
+    ipStateRegion: '',
+    ipCity: '',
+    isp: ''
+  }
 
   public httpHeaderAttributes: HttpHeaderAttributes = {
     userAgent: '',
@@ -38,6 +63,11 @@ export class FingerprintComponent implements OnInit {
     contentEncoding: '',
     contentLanguage: ''
   }
+
+   public locationAttributes: LocationAttributes = {
+    coordinates: ''
+   }
+
 
   private fingerprint: Fingerprint = {
     id: 0
@@ -54,8 +84,6 @@ export class FingerprintComponent implements OnInit {
       this.constants.CALENDAR,
       this.constants.NUMBERING_SYSTEM
     ];*/
-
-  /*private unsubscribe: Subject<any> = new Subject();*/
 
   constructor (
     private fingerprintService: FingerprintService,
@@ -138,7 +166,7 @@ export class FingerprintComponent implements OnInit {
       gyroscope: this.javascriptAttributesList.gyroscope,
       accelerometer: this.javascriptAttributesList.accelerometer,
       hardwareConcurrency: this.javascriptAttributesList.hardwareConcurrency,
-      battery: this.javascriptAttributesList.battery
+      screen: this.javascriptAttributesList.screen
     };
     this.fingerprintService.createFingerprint(data)
       .subscribe({
@@ -184,6 +212,7 @@ export class FingerprintComponent implements OnInit {
   }
   //TODO
   public async hasAdBlock(){
+
      detectAnyAdblocker().then((detected: any) => {
       if (detected) {
         this.javascriptAttributesList.adblock = "Yes";
@@ -231,6 +260,14 @@ export class FingerprintComponent implements OnInit {
     } return { error: 'Error'};
   }
 
+  public getScreen(){
+    const screen = window.screen;
+    if(this.javascriptAttributesList.screen != undefined){
+      return this.javascriptAttributesList.screen = screen;
+    }
+    return { error: "Error"}
+  }
+
   public accelerometer() {
     let accelerometer = 'No'
     if(this.javascriptAttributesList?.accelerometer != undefined){
@@ -248,13 +285,60 @@ export class FingerprintComponent implements OnInit {
     } return { error: 'Error'}
   }
 
+    public getIpAddress(){
+      return this.fingerprintService.getIp()
+        .pipe(takeUntil(this.unsubscribe))
+        .subscribe({
+          next:(res) =>{
+            this.ipAddressAttributes.ipAddress = res.ip;
+          }
+        })
+  }
+
+  public getHostname(){
+    this.ipAddressAttributes.hostname = location.hostname;
+  }
+
+  public getProtocol(){
+    this.ipAddressAttributes.protocol = location.protocol;
+  }
+
+  public getPosition(){
+    return this.fingerprintService.getLocationAttributes()
+      .pipe(takeUntil(this.unsubscribe))
+      .subscribe({
+        next:(res) =>{
+          this.locationAttributes.coordinates = res.coords.latitude
+          console.log(this.locationAttributes.coordinates)
+        }
+      })
+    // this.locationAttributes.location;
+    //   navigator.geolocation.getCurrentPosition((position) => console.log(position));
+
+  }
+
+  public getLocation(){
+    navigator.geolocation.getCurrentPosition(position => {
+      this.locationAttributes.coordinates = position.coords.latitude + ', ' + position.coords.longitude
+    })
+  }
+  //TODO
+  public getMTU(){}
+
+
+
+
+
 
   ngOnInit(): void {
     /*this.dataSource.push(this.javascriptAttributesList)*/
+    this.getLocation()
     this.loadInitialData();
+    //navigator.geolocation.getCurrentPosition((position) => console.log(position))
     this.getJavascriptAttributesData();
     this.getVideoCardInfo();
-    console.log(this.hasAdBlock());
+    //console.log(window.navigator)
+    //console.log(this.hasAdBlock());
     this.hasCookiesEnabled();
     this.deviceMemory();
     this.screenSize();
@@ -262,6 +346,12 @@ export class FingerprintComponent implements OnInit {
     this.accelerometer();
     this.hardwareConcurrency();
     this.saveFingerprint();
+    this.getProtocol();
+    //this.getPosition();
+    console.log(this.getIpAddress());
+    console.log(this.ipAddressAttributes.ipAddress);
+    console.log(this.getHostname());
+    this.getLocation()
     //console.log(this.fingerprintService.getAllFingerprints())
     //this.getKeyboardLayout();
 

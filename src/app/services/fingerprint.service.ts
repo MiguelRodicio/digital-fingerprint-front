@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import {HttpClient, HttpHeaders} from "@angular/common/http";
-import {Fingerprint, JavascriptAttributes} from "../models/fingerprint.model";
+import {Fingerprint, JavascriptAttributes, IpAddressAttributes} from "../models/fingerprint.model";
 import {Observable} from "rxjs";
 const baseUrl = 'http://localhost:8080';
 
@@ -11,6 +11,7 @@ const baseUrl = 'http://localhost:8080';
 export class FingerprintService {
 
   fingerprint?:Fingerprint;
+  ipAddressData?: IpAddressAttributes;
 
   //javascriptAttributes?: string;
   //httpAttributes:? string;
@@ -34,7 +35,6 @@ export class FingerprintService {
       this.javascriptAttributeList?.connection = connection;
     })*/
 
-
   }
 
 
@@ -53,5 +53,21 @@ export class FingerprintService {
 
   deleteFingerprint(id: any): Observable<any> {
     return this.http.delete('${baseUrl}/${id}');
+  }
+
+  public getLocationAttributes(): Observable<any>{
+    return this.http.get('https://ipgeolocation.abstractapi.com/v1/?api_key=');
+  }
+
+  getIp(): Observable<any>{
+    return this.http.get('https://api.ipify.org?format=json')
+      // .subscribe({
+      //   next:(ipAddress) =>{
+      //     console.log(this.ipAddressData)
+      //     this.ipAddressData = ipAddress;
+      //    }
+      //   // error: (e) => console.error(e)
+      // })
+
   }
 }

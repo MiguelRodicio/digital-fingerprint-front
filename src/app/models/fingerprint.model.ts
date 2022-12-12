@@ -11,6 +11,24 @@ export class HttpHeaderAttributes {
   public accept?: string;
   public contentEncoding?: string;
   public contentLanguage?: string;
+  public cookies?: string;
+}
+
+export class IpAddressAttributes {
+  public ipAddress?: string;
+  public ipv6Address?: string;
+  public hostname?: string;
+  public protocol?: string;
+  public ipAddressLocation?: string;
+  public localIpAddress?: string;
+  public publicIpAddress?: string;
+  public dnsServers?: string;
+  //public mtu?: number;
+  //public hops?: number;
+  public ipCountry?: string;
+  public ipStateRegion?: string;
+  public ipCity?: string;
+  public isp?: string
 }
 
 export class JavascriptAttributes {
@@ -35,4 +53,9 @@ export class JavascriptAttributes {
   public accelerometer?: string;
   public hardwareConcurrency?: number;
   public battery?: string;
+  public screen?: Screen
+}
+
+export class LocationAttributes {
+  public coordinates?: string;
 }

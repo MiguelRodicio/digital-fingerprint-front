@@ -11,5 +11,12 @@ export class Constants {
   CALENDAR = "Calendar";
   NUMBERING_SYSTEM = "Numbering System";
   PLATFORM_TYPE = "Platform Type";
+  BATTERY = "Battery";
+  SCREEN = "Screen";
+
+  IPADDRESS = "IPAddress";
+  HOSTNAME = "Hostname";
+  PROTOCOL = "Protocol";
+  LOCATION = "Location"
 
 }

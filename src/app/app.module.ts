@@ -10,6 +10,7 @@ import {MatToolbarModule} from "@angular/material/toolbar";
 import {Constants} from "./constants/constants";
 import {HttpClientModule} from "@angular/common/http";
 import { CheckboxComponent } from './components/checkbox/checkbox.component';
+//import { AgmCoreModule } from '@agm/core';
 
 @NgModule({
   declarations: [
