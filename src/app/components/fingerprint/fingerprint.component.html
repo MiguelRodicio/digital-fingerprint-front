@@ -18,64 +18,149 @@
   </mat-checkbox>
 </div>
 
-<div class="container-fluid">
-  <table>
-    <tr>
-      <th>{{this.constants.ATTRIBUTE_TYPE}}</th>
-      <th>{{this.constants.VALUE}}</th>
-    </tr>
-    <tr>
-      <td>{{this.constants.USER_AGENT}}</td>
-      <td>{{this.httpHeaderAttributes.userAgent}}</td>
-    </tr>
-    <tr>
-      <td>{{this.constants.NAVIGATOR_TYPE}}</td>
-      <td>{{this.javascriptAttributesList.navigatorType}}</td>
-    </tr>
-    <tr>
-      <td>{{this.constants.TIMEZONE}}</td>
-      <td>{{this.javascriptAttributesList.timeZone}}</td>
-    </tr>
-    <tr>
-      <td>{{this.constants.LOCALE}}</td>
-      <td>{{this.javascriptAttributesList.locale}}</td>
-    </tr>
-    <tr>
-      <td>{{this.constants.CALENDAR}}</td>
-      <td>{{this.javascriptAttributesList.calendar}}</td>
-    </tr>
-    <tr>
-      <td>{{this.constants.NUMBERING_SYSTEM}}</td>
-      <td>{{this.javascriptAttributesList.numberingSystem}}</td>
-    </tr>
-    <tr>
-      <td>{{this.constants.PLATFORM_TYPE}}</td>
-      <td>{{this.javascriptAttributesList.platformType}}</td>
+<!--<div class="container-fluid">-->
+<!--  <table>-->
+<!--    <tr>-->
+<!--      <th>{{this.constants.ATTRIBUTE_TYPE}}</th>-->
+<!--      <th>{{this.constants.VALUE}}</th>-->
+<!--    </tr>-->
+<!--    <tr>-->
+<!--      <td>{{this.constants.USER_AGENT}}</td>-->
+<!--      <td>{{this.httpHeaderAttributes.userAgent}}</td>-->
+<!--    </tr>-->
+<!--    <tr>-->
+<!--      <td>{{this.constants.NAVIGATOR_TYPE}}</td>-->
+<!--      <td>{{this.javascriptAttributes.navigatorType}}</td>-->
+<!--    </tr>-->
+<!--    <tr>-->
+<!--      <td>{{this.constants.TIMEZONE}}</td>-->
+<!--      <td>{{this.javascriptAttributes.timeZone}}</td>-->
+<!--    </tr>-->
+<!--    <tr>-->
+<!--      <td>{{this.constants.LOCALE}}</td>-->
+<!--      <td>{{this.javascriptAttributes.locale}}</td>-->
+<!--    </tr>-->
+<!--    <tr>-->
+<!--      <td>{{this.constants.CALENDAR}}</td>-->
+<!--      <td>{{this.javascriptAttributes.calendar}}</td>-->
+<!--    </tr>-->
+<!--    <tr>-->
+<!--      <td>{{this.constants.NUMBERING_SYSTEM}}</td>-->
+<!--      <td>{{this.javascriptAttributes.numberingSystem}}</td>-->
+<!--    </tr>-->
+<!--    <tr>-->
+<!--      <td>{{this.constants.PLATFORM_TYPE}}</td>-->
+<!--      <td>{{this.javascriptAttributes.platformType}}</td>-->
 
-    </tr>
-    <tr>
-      <td>{{this.constants.BATTERY}}</td>
-      <td>{{this.javascriptAttributesList.battery}}</td>
-    </tr>
-    <tr>
-      <td>{{this.constants.IPADDRESS}}</td>
-      <td>{{this.ipAddressAttributes.ipAddress}}</td>
-    </tr>
-    <tr>
-      <td>{{this.constants.HOSTNAME}}</td>
-      <td>{{this.ipAddressAttributes.hostname}}</td>
-    </tr>
-    <tr>
-      <td>{{this.constants.PROTOCOL}}</td>
-      <td>{{this.ipAddressAttributes.protocol}}</td>
-    </tr>
-    <tr>
-      <td>{{this.constants.LOCATION}}</td>
-      <td>{{this.locationAttributes.coordinates}}</td>
-    </tr>
+<!--    </tr>-->
+<!--    <tr>-->
+<!--      <td>{{this.constants.BATTERY}}</td>-->
+<!--      <td>{{this.javascriptAttributes.battery}}</td>-->
+<!--    </tr>-->
+<!--    <tr>-->
+<!--      <td>{{this.constants.HARDWARE_CONCURRENCY}}</td>-->
+<!--      <td>{{this.javascriptAttributes.hardwareConcurrency}}</td>-->
+<!--    </tr>-->
+<!--    <tr>-->
+<!--      <td>{{this.constants.WEBGL_RENDERER}}</td>-->
+<!--      <td>{{this.javascriptAttributes.webGLRenderer}}</td>-->
+<!--    </tr>-->
+<!--    <tr>-->
+<!--      <td>{{this.constants.DEVICE_MEMORY}}</td>-->
+<!--      <td>{{this.javascriptAttributes.deviceMemory}}</td>-->
+<!--    </tr>-->
+<!--    <tr>-->
+<!--      <td>{{this.constants.IPADDRESS}}</td>-->
+<!--      <td>{{this.ipAddressAttributes.ipAddress}}</td>-->
+<!--    </tr>-->
+<!--    <tr>-->
+<!--      <td>{{this.constants.HOSTNAME}}</td>-->
+<!--      <td>{{this.ipAddressAttributes.hostname}}</td>-->
+<!--    </tr>-->
+
+<!--    <tr>-->
+<!--      <td>{{this.constants.PROTOCOL}}</td>-->
+<!--      <td>{{this.ipAddressAttributes.protocol}}</td>-->
+<!--    </tr>-->
+<!--    <tr>-->
+<!--      <td>{{this.constants.LOCATION}}</td>-->
+<!--      <td>{{this.locationAttributes.coordinates}}</td>-->
+<!--    </tr>-->
+<!--  </table>-->
+<!--</div>-->
+
+<!--<div class="table-container">-->
+<!--  <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">-->
+<!--    &lt;!&ndash; Columnas &ndash;&gt;-->
+<!--    <ng-container matColumnDef="attribute">-->
+<!--      <th mat-header-cell *matHeaderCellDef class="mat-header-cell-custom">{{ this.constants.ATTRIBUTE_TYPE }}</th>-->
+<!--      <td mat-cell *matCellDef="let row">{{ row.attribute }}</td>-->
+<!--    </ng-container>-->
+
+<!--    <ng-container matColumnDef="value">-->
+<!--      <th mat-header-cell *matHeaderCellDef class="mat-header-cell-custom">{{ this.constants.VALUE }}</th>-->
+<!--      <td mat-cell *matCellDef="let row">{{ row.value }}</td>-->
+<!--    </ng-container>-->
+
+<!--    &lt;!&ndash; Definir las columnas &ndash;&gt;-->
+<!--    <tr mat-header-row *matHeaderRowDef="columns"></tr>-->
+<!--    <tr mat-row *matRowDef="let row; columns: columns;"></tr>-->
+<!--  </table>-->
+<!--</div>-->
+
+
+<div class="table-container">
+  <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+    <!-- Columnas -->
+    <ng-container matColumnDef="attribute">
+      <th mat-header-cell *matHeaderCellDef class="mat-header-cell-custom">{{ this.constants.ATTRIBUTE_TYPE }}</th>
+      <td mat-cell *matCellDef="let row" class="attribute-cell">
+        <span>{{ row.attribute }}</span>
+        <button class="gray-icon"  matTooltipClass="custom-tooltip-icon" mat-icon-button matTooltip="Información sobre {{ row.attribute }}">
+          <mat-icon>info</mat-icon>
+        </button>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="value">
+      <th mat-header-cell *matHeaderCellDef class="mat-header-cell-custom">{{ this.constants.VALUE }}</th>
+      <td mat-cell *matCellDef="let row">{{ row.value }}</td>
+    </ng-container>
+
+    <!-- Definir las columnas -->
+    <tr mat-header-row *matHeaderRowDef="columns"></tr>
+    <tr mat-row *matRowDef="let row; columns: columns;"></tr>
   </table>
 </div>
 
+<div class="table-container">
+  <google-map [center]="this.locationAttributes.mapCenter">
+    <map-marker [position]="this.locationAttributes.mapCenter">
+    </map-marker>
+  </google-map>
+</div>
+
+
+<!--<div class="table-container">-->
+<!--  <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">-->
+<!--    &lt;!&ndash; Columnas &ndash;&gt;-->
+<!--    <ng-container matColumnDef="attribute">-->
+<!--      <th mat-header-cell *matHeaderCellDef class="mat-header-cell-custom">{{ this.constants.ATTRIBUTE_TYPE }}</th>-->
+<!--      <td mat-cell *matCellDef="let row" matTooltip="{{ row.attribute }}">{{ row.attribute }}</td>-->
+<!--      &lt;!&ndash; Aquí hemos agregado matTooltip y {{ row.tooltip }} para mostrar tooltips dinámicos &ndash;&gt;-->
+<!--    </ng-container>-->
+
+<!--    <ng-container matColumnDef="value">-->
+<!--      <th mat-header-cell *matHeaderCellDef class="mat-header-cell-custom">{{ this.constants.VALUE }}</th>-->
+<!--      <td mat-cell *matCellDef="let row" matTooltip="{{ row.tooltip }}">{{ row.value }}</td>-->
+<!--      &lt;!&ndash; También aquí hemos agregado matTooltip y {{ row.tooltip }} &ndash;&gt;-->
+<!--    </ng-container>-->
+
+<!--    &lt;!&ndash; Definir las columnas &ndash;&gt;-->
+<!--    <tr mat-header-row *matHeaderRowDef="columns"></tr>-->
+<!--    <tr mat-row *matRowDef="let row; columns: columns;"></tr>-->
+<!--  </table>-->
+<!--</div>-->
 
 
 <!--<div class="div">

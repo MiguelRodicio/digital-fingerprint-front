@@ -29,7 +29,7 @@ export class FingerprintService {
   ) { }
 
   public getJavascriptAttributesData(): any{
-    const connection = JSON.parse(JSON.stringify(window.navigator.connection));
+    const connection = JSON.parse(JSON.stringify((navigator as any).connection));
     return console.log(connection);
     /*connection.forEach((javascriptAttribute: JavascriptAttributes) => {
       this.javascriptAttributeList?.connection = connection;
@@ -57,6 +57,10 @@ export class FingerprintService {
 
   public getLocationAttributes(): Observable<any>{
     return this.http.get('https://ipgeolocation.abstractapi.com/v1/?api_key=');
+  }
+
+  public getGeolocationAttributes(): Observable<any> {
+    return this.http.get('http://ip-api.com/json/?fields=66846719')
   }
 
   getIp(): Observable<any>{

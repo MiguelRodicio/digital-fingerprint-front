@@ -9,6 +9,10 @@ import {MatCardModule} from "@angular/material/card";
 import {MatTableModule} from "@angular/material/table";
 import {MatCheckboxModule} from "@angular/material/checkbox";
 import {FormsModule} from "@angular/forms";
+import {GoogleMapsModule} from "@angular/google-maps";
+import {MatButtonModule} from "@angular/material/button";
+import {MatTooltipModule} from "@angular/material/tooltip";
+import {MatIconModule} from "@angular/material/icon";
 
 
 
@@ -28,7 +32,11 @@ import {FormsModule} from "@angular/forms";
     MatCardModule,
     MatTableModule,
     MatCheckboxModule,
-    FormsModule
+    FormsModule,
+    GoogleMapsModule,
+    MatButtonModule,
+    MatTooltipModule,
+    MatIconModule
   ]
 })
 export class FingerprintModule { }
