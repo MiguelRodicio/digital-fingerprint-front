@@ -13,6 +13,10 @@ import {GoogleMapsModule} from "@angular/google-maps";
 import {MatButtonModule} from "@angular/material/button";
 import {MatTooltipModule} from "@angular/material/tooltip";
 import {MatIconModule} from "@angular/material/icon";
+import {AppModule} from "../../app.module";
+import {DownloadButtonComponent} from "../../components/download-button/download-button.component";
+import {DownloadButtonModule} from "../download-button/download-button.module";
+import {MatMenuModule} from "@angular/material/menu";
 
 
 
@@ -23,20 +27,22 @@ import {MatIconModule} from "@angular/material/icon";
   exports: [
     FingerprintComponent
   ],
-  imports: [
-    CommonModule,
-    MatChipsModule,
-    FlexModule,
-    MatSidenavModule,
-    MatToolbarModule,
-    MatCardModule,
-    MatTableModule,
-    MatCheckboxModule,
-    FormsModule,
-    GoogleMapsModule,
-    MatButtonModule,
-    MatTooltipModule,
-    MatIconModule
-  ]
+    imports: [
+        CommonModule,
+        MatChipsModule,
+        FlexModule,
+        MatSidenavModule,
+        MatToolbarModule,
+        MatCardModule,
+        MatTableModule,
+        MatCheckboxModule,
+        FormsModule,
+        GoogleMapsModule,
+        MatTooltipModule,
+        MatIconModule,
+        DownloadButtonModule,
+        MatButtonModule,
+        MatMenuModule
+    ]
 })
 export class FingerprintModule { }

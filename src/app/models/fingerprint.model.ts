@@ -2,19 +2,11 @@ import {MapMarker} from "@angular/google-maps";
 
 export class Fingerprint{
   public id?: number;
-
-}
-
-export class HttpHeaderAttributes {
-
   public userAgent?: string;
   public accept?: string;
   public contentEncoding?: string;
   public contentLanguage?: string;
   public cookies?: string;
-}
-
-export class IpAddressAttributes {
   public ipAddress?: string;
   public ipv6Address?: string;
   public hostname?: string;
@@ -28,11 +20,6 @@ export class IpAddressAttributes {
   public ipCountry?: string;
   public ipStateRegion?: string;
   public ipCity?: string;
-  public isp?: string
-}
-
-export class JavascriptAttributes {
-
   public navigatorType?: string;
   public locale?: string;
   public calendar?: string;
@@ -53,15 +40,15 @@ export class JavascriptAttributes {
   public gyroscope?: string;
   public accelerometer?: string;
   public hardwareConcurrency?: number;
-  public battery?: string;
-  public screen?: Screen
+  public battery?: any;
+  public screen?: string
   public query?: string;
   public status?: string;
 
   public timezone?: string;
   public offset?: number;
   public currency?: string;
-  public isp?: string;
+
   public org?: string;
   public as?: string;
   public asName?: string;
@@ -69,12 +56,7 @@ export class JavascriptAttributes {
   public mobile?: boolean;
   public proxy?: boolean;
   public hosting?: boolean;
-
-
-
-}
-
-export class LocationAttributes {
+  public isp?: string;
   public continent?: string;
   public continentCode?: string;
   public country?: string;
@@ -90,4 +72,13 @@ export class LocationAttributes {
   public positionMap?: google.maps.LatLngLiteral
   public mapCenter: google.maps.LatLngLiteral = { lat: 0, lng: 0 };
   //public center: google.maps.LatLngLiteral;
+
+}
+
+export interface BatteryInfo {
+  charging: boolean;
+  level: number;
+  chargingTime: number;
+  dischargingTime: number;
+  addEventListener: (type: string, listener: EventListenerOrEventListenerObject) => void;
 }

@@ -1,22 +1,22 @@
-<div class="container-fluid">
-  <mat-checkbox
-  [(ngModel)]="allCompleted"
-  >
-    Select All
-  </mat-checkbox>
-  <br>
+<!--&lt;!&ndash;<div class="container-fluid">-->
+<!--  <mat-checkbox-->
+<!--  [(ngModel)]="allCompleted"-->
+<!--  >-->
+<!--    Select All-->
+<!--  </mat-checkbox>-->
+<!--  <br>-->
 
-  <mat-checkbox
-  >
-    {{this.constants.USER_AGENT}}
-  </mat-checkbox>
-  <br>
+<!--  <mat-checkbox-->
+<!--  >-->
+<!--    {{this.constants.USER_AGENT}}-->
+<!--  </mat-checkbox>-->
+<!--  <br>-->
 
-  <mat-checkbox
-  >
-    {{this.constants.PLATFORM_TYPE}}
-  </mat-checkbox>
-</div>
+<!--  <mat-checkbox-->
+<!--  >-->
+<!--    {{this.constants.PLATFORM_TYPE}}-->
+<!--  </mat-checkbox>-->
+<!--</div>&ndash;&gt;-->
 
 <!--<div class="container-fluid">-->
 <!--  <table>-->
@@ -107,8 +107,12 @@
 <!--    <tr mat-row *matRowDef="let row; columns: columns;"></tr>-->
 <!--  </table>-->
 <!--</div>-->
-
-
+<div>
+<div class="table-container-button">
+  <app-download-button
+    [data] = "dataSource">
+  </app-download-button>
+</div>
 <div class="table-container">
   <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
     <!-- Columnas -->
@@ -132,10 +136,16 @@
     <tr mat-row *matRowDef="let row; columns: columns;"></tr>
   </table>
 </div>
+<br>
+</div>
+
+
+
+
 
 <div class="table-container">
-  <google-map [center]="this.locationAttributes.mapCenter">
-    <map-marker [position]="this.locationAttributes.mapCenter">
+  <google-map [center]="this.fingerprint.mapCenter">
+    <map-marker [position]="this.fingerprint.mapCenter">
     </map-marker>
   </google-map>
 </div>

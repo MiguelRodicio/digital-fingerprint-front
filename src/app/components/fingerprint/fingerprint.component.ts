@@ -2,13 +2,9 @@ import {Component, OnInit} from '@angular/core';
 import {FingerprintService} from "../../services/fingerprint.service";
 import {Constants} from "../../constants/constants";
 import {forkJoin, from, Observable, Subject, takeUntil} from "rxjs";
-import {
-  Fingerprint,
-  HttpHeaderAttributes,
-  IpAddressAttributes,
-  JavascriptAttributes,
-  LocationAttributes
-} from "../../models/fingerprint.model";
+import {Fingerprint} from "../../models/fingerprint.model";
+
+import { BatteryInfo } from '../../models/fingerprint.model';
 //Module on decs.d.ts
 import {detectAnyAdblocker} from "just-detect-adblock";
 import {getGPUTier} from 'detect-gpu';
@@ -34,9 +30,10 @@ export class FingerprintComponent implements OnInit {
   public completed: boolean = false;
   public allCompleted: boolean = false;
   private unsubscribe: Subject<any> = new Subject();
+  public apiData: any = {};
 
 
-  public javascriptAttributes: JavascriptAttributes = {
+  public fingerprint: Fingerprint = {
     navigatorType: '',
     webGLRenderer: '',
     connection: '',
@@ -49,45 +46,32 @@ export class FingerprintComponent implements OnInit {
     gyroscope: '',
     accelerometer: '',
     hardwareConcurrency: 0,
-    //battery: '',
-    screen: undefined
+    battery: '',
+    screen: '',
+    cookies: '',
+    positionMap: {lat: 0, lng: 0},
+    mapCenter:  { lat: 0, lng: 0 },
+    id: 0
   };
 
-  public ipAddressAttributes: IpAddressAttributes = {
-    ipAddress: '',
-    ipv6Address: '',
-    hostname: '',
-    protocol: '',
-    ipAddressLocation: '',
-    localIpAddress: '',
-    publicIpAddress: '',
-    dnsServers: '',
-    //mtu: 0,
-    //hops: 0,
-    ipCountry: '',
-    ipStateRegion: '',
-    ipCity: '',
-    isp: ''
-  }
-
-  public httpHeaderAttributes: HttpHeaderAttributes = {
-    userAgent: '',
-    accept: '',
-    contentEncoding: '',
-    contentLanguage: ''
-  }
-
-   public locationAttributes: LocationAttributes = {
-    coordinates: '',
-     positionMap: {lat: 0, lng: 0},
-     mapCenter:  { lat: 0, lng: 0 }
-   }
+  // public ipAddressAttributes: IpAddressAttributes = {
+  //   ipAddress: '',
+  //   ipv6Address: '',
+  //   hostname: '',
+  //   protocol: '',
+  //   ipAddressLocation: '',
+  //   localIpAddress: '',
+  //   publicIpAddress: '',
+  //   dnsServers: '',
+  //   //mtu: 0,
+  //   //hops: 0,
+  //   ipCountry: '',
+  //   ipStateRegion: '',
+  //   ipCity: '',
+  // }
+  //
 
 
-
-  private fingerprint: Fingerprint = {
-    id: 0
-  }
   //Mat-table data
 
   columns: string[] = ['attribute', 'value'];
@@ -105,26 +89,21 @@ export class FingerprintComponent implements OnInit {
     ];*/
 
     constructor(private fingerprintService: FingerprintService, public constants: Constants) {
+      this.loadInitialData()
 
     }
     public geolocationData: any;
     public javascriptAttributesData: any;
 
-
-
-    public setAllChecked() {
-    this.allCompleted = true;
-
-  }
-/*  public getNavigatorType() {
-    const usrAgent = navigator.userAgent;
-    return this._fingerprintService.navigatorType = (usrAgent.indexOf("Edg") > -1) ? "Microsoft Edge (Chromium)" :
-     (usrAgent.indexOf("Firefox") > -1) ? "Mozilla Firefox" : (usrAgent.indexOf("Opera") > -1) ? "Opera" :
-         (usrAgent.indexOf("Trident") > -1) ? "Microsoft Internet Explorer" :
-           (usrAgent.indexOf("Edge") > -1) ? "Microsoft Edge (Legacy)" :
-             (usrAgent.indexOf("Chrome") > -1) ? "Google Chrome" :
-               (usrAgent.indexOf("Safari") > -1) ? "Safari" : "unknown"
-  }*/
+  /*  public getNavigatorType() {
+      const usrAgent = navigator.userAgent;
+      return this._fingerprintService.navigatorType = (usrAgent.indexOf("Edg") > -1) ? "Microsoft Edge (Chromium)" :
+       (usrAgent.indexOf("Firefox") > -1) ? "Mozilla Firefox" : (usrAgent.indexOf("Opera") > -1) ? "Opera" :
+           (usrAgent.indexOf("Trident") > -1) ? "Microsoft Internet Explorer" :
+             (usrAgent.indexOf("Edge") > -1) ? "Microsoft Edge (Legacy)" :
+               (usrAgent.indexOf("Chrome") > -1) ? "Google Chrome" :
+                 (usrAgent.indexOf("Safari") > -1) ? "Safari" : "unknown"
+    }*/
 
  /* public getNavigatorUserAgent(){
     return this._fingerprintService.userAgent = navigator.userAgent;
@@ -145,51 +124,59 @@ export class FingerprintComponent implements OnInit {
     return this._fingerprintService.platformType = window.navigator.platform;
   }*/
 
-  public loadInitialData(){
-
-    const usrAgent = navigator.userAgent;
-    if(this.javascriptAttributes?.navigatorType != undefined){
-      this.javascriptAttributes.navigatorType = (usrAgent.indexOf("Edg") > -1) ? "Microsoft Edge (Chromium)" :
-        (usrAgent.indexOf("Firefox") > -1) ? "Mozilla Firefox" : (usrAgent.indexOf("Opera") > -1) ? "Opera" :
-          (usrAgent.indexOf("Trident") > -1) ? "Microsoft Internet Explorer" :
-            (usrAgent.indexOf("Edge") > -1) ? "Microsoft Edge (Legacy)" :
-              (usrAgent.indexOf("Chrome") > -1) ? "Google Chrome" :
-                (usrAgent.indexOf("Safari") > -1) ? "Safari" : "unknown";
-    }
-
-    this.httpHeaderAttributes.userAgent = navigator.userAgent;
-    this.javascriptAttributes.timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    this.javascriptAttributes.locale = Intl.DateTimeFormat().resolvedOptions().locale;
-    this.javascriptAttributes.calendar = Intl.DateTimeFormat().resolvedOptions().calendar;
-    this.javascriptAttributes.numberingSystem = Intl.DateTimeFormat().resolvedOptions().numberingSystem;
-    this.javascriptAttributes.platformType = window.navigator.platform;
+  public loadInitialData() {
+    this.fingerprint.navigatorType = this.getBrowserName();
+    this.fingerprint.userAgent = navigator.userAgent;
+    const dateTimeOptions = Intl.DateTimeFormat().resolvedOptions();
+    this.fingerprint.timeZone = dateTimeOptions.timeZone;
+    this.fingerprint.locale = dateTimeOptions.locale;
+    this.fingerprint.calendar = dateTimeOptions.calendar;
+    this.fingerprint.numberingSystem = dateTimeOptions.numberingSystem;
+    this.fingerprint.platformType = window.navigator.platform;
   }
 
+  private getBrowserName() {
+    const usrAgent = navigator.userAgent;
+    const browserMap = {
+      "Edg": "Microsoft Edge (Chromium)",
+      "Firefox": "Mozilla Firefox",
+      "Opera": "Opera",
+      "Trident": "Microsoft Internet Explorer",
+      "Edge": "Microsoft Edge (Legacy)",
+      "Chrome": "Google Chrome",
+      "Safari": "Safari"
+    };
+
+    return Object.keys(browserMap).find(key => usrAgent.includes(key)) || "unknown";
+
+  }
+
+
   public async saveFingerprint(){
-    if(this.javascriptAttributes.adblock!=undefined){
-      this.javascriptAttributes.adblock = await this.hasAdBlock();
+    if(this.fingerprint.adblock!=undefined){
+      this.fingerprint.adblock = await this.hasAdBlock();
     }
     const data = {
       id: this.fingerprint.id,
-      navigatorType: this.javascriptAttributes.navigatorType,
-      locale: this.javascriptAttributes.locale,
-      calendar: this.javascriptAttributes.calendar,
-      numberingSystem: this.javascriptAttributes.numberingSystem,
-      connection: this.javascriptAttributes.connection,
-      webRenderer: this.javascriptAttributes.webGLRenderer,
-      adblock: this.javascriptAttributes.adblock,
-      cookiesEnabled: this.javascriptAttributes.cookiesEnabled,
-      platformType: this.javascriptAttributes.platformType,
-      deviceMemory: this.javascriptAttributes.deviceMemory,
-      timeZone: this.javascriptAttributes.timeZone,
-      screenWidth: this.javascriptAttributes.screenWidth,
-      screenHeight: this.javascriptAttributes.screenHeight,
-      gyroscope: this.javascriptAttributes.gyroscope,
-      accelerometer: this.javascriptAttributes.accelerometer,
-      hardwareConcurrency: this.javascriptAttributes.hardwareConcurrency,
-      screen: this.javascriptAttributes.screen
+      navigatorType: this.fingerprint.navigatorType,
+      locale: this.fingerprint.locale,
+      calendar: this.fingerprint.calendar,
+      numberingSystem: this.fingerprint.numberingSystem,
+      connection: this.fingerprint.connection,
+      webRenderer: this.fingerprint.webGLRenderer,
+      adblock: this.fingerprint.adblock,
+      cookiesEnabled: this.fingerprint.cookiesEnabled,
+      platformType: this.fingerprint.platformType,
+      deviceMemory: this.fingerprint.deviceMemory,
+      timeZone: this.fingerprint.timeZone,
+      screenWidth: this.fingerprint.screenWidth,
+      screenHeight: this.fingerprint.screenHeight,
+      gyroscope: this.fingerprint.gyroscope,
+      accelerometer: this.fingerprint.accelerometer,
+      hardwareConcurrency: this.fingerprint.hardwareConcurrency,
+      screen: this.fingerprint.screen
     };
-    this.fingerprintService.createFingerprint(data)
+    this.fingerprintService.saveFingerprint(data)
       .subscribe({
         next:(res)=>{
           console.log(res);
@@ -208,7 +195,7 @@ export class FingerprintComponent implements OnInit {
   public getGpu(){
     (async () => {
       const gpuTier = await getGPUTier();
-      this.javascriptAttributes.webGLRenderer = gpuTier.gpu;
+      this.fingerprint.webGLRenderer = gpuTier.gpu;
 
       // Example output:
       // {
@@ -228,7 +215,7 @@ export class FingerprintComponent implements OnInit {
         this.getGpuToObservable()
             .pipe(takeUntil(this.unsubscribe))
             .subscribe((gpuTier) => {
-                this.javascriptAttributes.webGLRenderer = gpuTier.gpu;
+                this.fingerprint.webGLRenderer = gpuTier.gpu;
             });
     }
 
@@ -253,22 +240,22 @@ export class FingerprintComponent implements OnInit {
         error: "no webgl",
       };
     }
-    if(this.javascriptAttributes?.webGLRenderer != undefined){
+    if(this.fingerprint?.webGLRenderer != undefined){
       const extension = gl.getExtension('WEBGL_debug_renderer_info');
       if(extension) {
-        this.javascriptAttributes.webGLVendor = gl.getParameter(extension.UNMASKED_VENDOR_WEBGL);
-        this.javascriptAttributes.webGLRenderer = gl.getParameter(extension.UNMASKED_RENDERER_WEBGL);
+        this.fingerprint.webGLVendor = gl.getParameter(extension.UNMASKED_VENDOR_WEBGL);
+        this.fingerprint.webGLRenderer = gl.getParameter(extension.UNMASKED_RENDERER_WEBGL);
       }
     }
     return {
-      vendor: this.javascriptAttributes.webGLVendor,
-      renderer: this.javascriptAttributes.webGLRenderer,
+      vendor: this.fingerprint.webGLVendor,
+      renderer: this.fingerprint.webGLRenderer,
     };
   }
 
   public getJavascriptAttributesData(){
-    if(this.javascriptAttributes?.connection != undefined){
-      return this.javascriptAttributes.connection = (navigator as any).connection;
+    if(this.fingerprint?.connection != undefined){
+      return this.fingerprint.connection = (navigator as any).connection;
     }
     return { error: 'Error'}
   }
@@ -276,9 +263,9 @@ export class FingerprintComponent implements OnInit {
   public async hasAdBlock(){
      detectAnyAdblocker().then((detected: any) => {
       if (detected) {
-        this.javascriptAttributes.adblock = "Yes";
+        this.fingerprint.adblock = "Yes";
       }
-      this.javascriptAttributes.adblock = "No";
+      this.fingerprint.adblock = "No";
     });
   }
 
@@ -289,60 +276,60 @@ export class FingerprintComponent implements OnInit {
   }*/
 
   public hasCookiesEnabled() {
-    if(this.javascriptAttributes?.cookiesEnabled != undefined) {
-      return this.javascriptAttributes.cookiesEnabled = window.navigator.cookieEnabled.toString();
+    if(this.fingerprint?.cookiesEnabled != undefined) {
+      return this.fingerprint.cookiesEnabled = window.navigator.cookieEnabled.toString();
     } return { error: 'Error'}
   }
 
   public screenSize() {
-    if((this.javascriptAttributes?.screenWidth != undefined) && (this.javascriptAttributes?.screenHeight != undefined)){
-      this.javascriptAttributes.screenWidth = screen.width.toString();
-      this.javascriptAttributes.screenHeight = screen.height.toString();
-      return this.javascriptAttributes.screenWidth.concat("x" + this.javascriptAttributes.screenHeight);
+    if((this.fingerprint?.screenWidth != undefined) && (this.fingerprint?.screenHeight != undefined)){
+      this.fingerprint.screenWidth = screen.width.toString();
+      this.fingerprint.screenHeight = screen.height.toString();
+      return this.fingerprint.screen =this.fingerprint.screenWidth.concat("x" + this.fingerprint.screenHeight);
     } return { error: 'Error'};
   }
 
   public gyroscope() {
     let gyroscope = 'No';
-    if(this.javascriptAttributes?.gyroscope != undefined) {
+    if(this.fingerprint?.gyroscope != undefined) {
       window.addEventListener("devicemotion", function(event){
         if(event.rotationRate?.alpha || event.rotationRate?.beta || event.rotationRate?.gamma)
           gyroscope = 'Yes';
       });
-      return this.javascriptAttributes.gyroscope = gyroscope;
+      return this.fingerprint.gyroscope = gyroscope;
     } return { error : 'Error'};
   }
 
   public deviceMemory() {
     //const deviceMemory = window.navigator.deviceMemory;
     const deviceMemory = (window.navigator as any).deviceMemory;
-    if(this.javascriptAttributes?.deviceMemory != undefined){
-      return this.javascriptAttributes.deviceMemory = deviceMemory + "GB";
+    if(this.fingerprint?.deviceMemory != undefined){
+      return this.fingerprint.deviceMemory = deviceMemory + "GB";
     } return { error: 'Error'};
   }
 
-  public getScreen(){
-    const screen = window.screen;
-    if(this.javascriptAttributes.screen != undefined){
-      return this.javascriptAttributes.screen = screen;
-    }
-    return { error: "Error"}
-  }
+  // public getScreen(){
+  //   const screen = window.screen;
+  //   if(this.javascriptAttributes.screen != undefined){
+  //     return this.javascriptAttributes.screen = screen;
+  //   }
+  //   return { error: "Error"}
+  // }
 
   public accelerometer() {
     let accelerometer = 'No'
-    if(this.javascriptAttributes?.accelerometer != undefined){
+    if(this.fingerprint?.accelerometer != undefined){
       window.addEventListener("devicemotion", function(event){
         if(event.acceleration?.x || event.acceleration?.y || event.acceleration?.z)
           accelerometer = 'Yes';
       });
-      return this.javascriptAttributes.accelerometer = accelerometer;
+      return this.fingerprint.accelerometer = accelerometer;
     } return { error: 'Error'};
   }
 
   public hardwareConcurrency() {
-    if(this.javascriptAttributes?.hardwareConcurrency != undefined){
-      return this.javascriptAttributes.hardwareConcurrency = navigator.hardwareConcurrency;
+    if(this.fingerprint?.hardwareConcurrency != undefined){
+      return this.fingerprint.hardwareConcurrency = navigator.hardwareConcurrency;
     } return { error: 'Error'}
   }
 
@@ -351,19 +338,34 @@ export class FingerprintComponent implements OnInit {
         .pipe(takeUntil(this.unsubscribe))
         .subscribe({
           next:(res) =>{
-            this.ipAddressAttributes.ipAddress = res.ip;
+            this.fingerprint.ipAddress = res.ip;
           }
         })
   }
 
   public getHostname(){
-    this.ipAddressAttributes.hostname = location.hostname;
+    this.fingerprint.hostname = location.hostname;
   }
 
   public getProtocol(){
-    this.ipAddressAttributes.protocol = location.protocol;
+    this.fingerprint.protocol = location.protocol;
   }
 
+  checkBatteryStatus(): Promise<string> {
+    return new Promise((resolve, reject) => {
+      (navigator as any).getBattery()
+        .then((battery: any) => {
+          if (battery.chargingTime === 0 && battery.dischargingTime === Infinity) {
+            resolve("false");
+          } else {
+            resolve("true");
+          }
+        })
+        .catch((error: any) => {
+          reject(error);
+        });
+    });
+  }
 
   // public getPosition(){
   //   this.fingerprintService.getLocationAttributes()
@@ -383,7 +385,7 @@ export class FingerprintComponent implements OnInit {
      this.fingerprintService.getLocationAttributes()
         .pipe(takeUntil(this.unsubscribe))
         .subscribe((res) =>{
-            this.locationAttributes.positionMap = {
+            this.fingerprint.positionMap = {
                 lat : res.coords.latitude,
                 lng : res.coords.longitude
             };
@@ -397,7 +399,7 @@ export class FingerprintComponent implements OnInit {
 
     public setMapCenter() {
         navigator.geolocation.getCurrentPosition((position) => {
-          this.locationAttributes.mapCenter = {
+          this.fingerprint.mapCenter = {
             lat: position.coords.latitude,
             lng: position.coords.longitude
           };
@@ -427,7 +429,7 @@ export class FingerprintComponent implements OnInit {
           next: ([geoAttributes, gpuTier]) => {
             // Los resultados de ambos observables están disponibles aquí
             this.javascriptAttributesData = geoAttributes;
-            this.javascriptAttributes.webGLRenderer = gpuTier.gpu;
+            this.fingerprint.webGLRenderer = gpuTier.gpu;
 
             // Continúa con cualquier otra lógica que necesites después de obtener la ubicación y la GPU.
           },
@@ -436,76 +438,206 @@ export class FingerprintComponent implements OnInit {
           }
         });
   }
-  public getAPIAttributes(){
+
+  /**
+   * Asigna dinámicamente los atributos del objeto fuente al objeto destino.
+   *
+   * @param {object} target - El objeto al que se asignarán los atributos.
+   * @param {object} source - El objeto que contiene los atributos a asignar.
+   */
+  public assignAttributes(target: any, source: any) {
+    Object.keys(source).forEach((key) => {
+      target[key] = source[key];
+    });
+  }
+
+
+  public assignAttributesFromAPI(res: any){
+    this.assignAttributes(this.fingerprint, res);
+  }
+
+  // public getAPIAttributes(){
+  //   this.fingerprintService.getGeolocationAttributes()
+  //     .pipe(takeUntil(this.unsubscribe))
+  //     .subscribe({
+  //       next:(res) =>{
+  //       //this.javascriptAttributesData = res;
+  //         this.assignJavascriptAttributes(res);
+  //         this.assignLocationAttributes(res);
+  //
+  //         const newData = [
+  //           {attribute: this.constants.QUERY, value: this.javascriptAttributes.query},
+  //           {attribute: this.constants.STATUS, value: this.javascriptAttributes.status},
+  //           {attribute: this.constants.CONTINENT, value: this.locationAttributes.continent},
+  //           {attribute: this.constants.CONTINENT_CODE, value: this.locationAttributes.continentCode},
+  //           {attribute: this.constants.COUNTRY, value: this.locationAttributes.country},
+  //           {attribute: this.constants.COUNTRY_CODE, value: this.locationAttributes.countryCode},
+  //           {attribute: this.constants.REGION, value: this.locationAttributes.region},
+  //           {attribute: this.constants.REGION_NAME, value: this.locationAttributes.regionName},
+  //           {attribute: this.constants.CITY, value: this.locationAttributes.city},
+  //           {attribute: this.constants.DISTRICT, value: this.locationAttributes.district},
+  //           {attribute: this.constants.ZIP, value: this.locationAttributes.zip},
+  //           {attribute: this.constants.ASNAME, value: this.javascriptAttributes.asName},
+  //           {attribute: this.constants.REVERSE, value: this.javascriptAttributes.reverse},
+  //           {attribute: this.constants.MOBILE, value: this.javascriptAttributes.mobile},
+  //           {attribute: this.constants.PROXY, value: this.javascriptAttributes.proxy},
+  //           {attribute: this.constants.OFFSET, value: this.javascriptAttributes.offset},
+  //           {attribute: this.constants.CURRENCY, value: this.javascriptAttributes.currency},
+  //           {attribute: this.constants.ISP, value: this.javascriptAttributes.isp},
+  //           {attribute: this.constants.ZIP, value: this.locationAttributes.zip},
+  //           {attribute: this.constants.HOSTING, value: this.javascriptAttributes.hosting}
+  //         ]
+  //         return this.dataSource.data = [...this.dataSource.data, ...newData];
+  //
+  //       },
+  //       error: (error) => {
+  //       console.error(error);
+  //     }
+  //   })
+  // }
+
+  public transformData(data: any[]): any {
+    return data.map(object => {
+      const newObject: { [key: string]: any } = {};
+      for (const key in object) {
+        if (key !== 'id') {
+          newObject[object[key].attribute] = object[key].value;
+        }
+      }
+      return newObject;
+    });
+
+  }
+// public postFingerprintData(){
+//   this.fingerprintService.getGeolocationAttributes()
+//     .pipe(takeUntil(this.unsubscribe))
+//     .subscribe({
+//       next: (res: any) => {
+//         //this.assignAttributesFromAPI(res);
+//         this.fingerprint.status = res.status;
+//         this.fingerprint.continent = res.continent;
+//         this.fingerprint.continentCode = res.continentCode;
+//         this.fingerprint.country = res.country;
+//         this.fingerprint.countryCode = res.countryCode;
+//         this.fingerprint.region = res.region;
+//         this.fingerprint.regionName = res.regionName;
+//         this.fingerprint.city = res.city;
+//         this.fingerprint.district = res.district;
+//         this.fingerprint.zip = res.zip;
+//         this.fingerprint.latitude = res.lat;
+//         this.fingerprint.longitude = res.lon;
+//         this.fingerprint.timezone = res.timezone;
+//         this.fingerprint.offset = res.offset;
+//         this.fingerprint.currency = res.currency;
+//         this.fingerprint.isp = res.isp;
+//         this.fingerprint.org = res.org;
+//         this.fingerprint.as = res.as;
+//         this.fingerprint.asName = res.asname;
+//         this.fingerprint.reverse = res.reverse;
+//         this.fingerprint.mobile = res.mobile;
+//         this.fingerprint.proxy = res.proxy;
+//         this.fingerprint.hosting = res.hosting;
+//         this.fingerprint.query = res.query;
+//       },
+//       error: (error) => {
+//         console.error(error);
+//       }
+//     });
+// }
+public setupDataSource2() {
+
     this.fingerprintService.getGeolocationAttributes()
       .pipe(takeUntil(this.unsubscribe))
       .subscribe({
-        next:(res) =>{
-        //this.javascriptAttributesData = res;
-          this.assignJavascriptAttributes(res);
-          this.assignLocationAttributes(res);
+      next: (res: any) => {
+        this.dataSource.data = this.setupDataSource(res);
+        //this.assignAttributesFromAPI(res);
+        this.fingerprint.status = res.status;
+        this.fingerprint.continent = res.continent;
+        this.fingerprint.continentCode = res.continentCode;
+        this.fingerprint.country = res.country;
+        this.fingerprint.countryCode = res.countryCode;
+        this.fingerprint.region = res.region;
+        this.fingerprint.regionName = res.regionName;
+        this.fingerprint.city = res.city;
+        this.fingerprint.district = res.district;
+        this.fingerprint.zip = res.zip;
+        this.fingerprint.latitude = res.lat;
+        this.fingerprint.longitude = res.lon;
+        this.fingerprint.timezone = res.timezone;
+        this.fingerprint.offset = res.offset;
+        this.fingerprint.currency = res.currency;
+        this.fingerprint.isp = res.isp;
+        this.fingerprint.org = res.org;
+        this.fingerprint.as = res.as;
+        this.fingerprint.asName = res.asname;
+        this.fingerprint.reverse = res.reverse;
+        this.fingerprint.mobile = res.mobile;
+        this.fingerprint.proxy = res.proxy;
+        this.fingerprint.hosting = res.hosting;
+        this.fingerprint.query = res.query;
 
-          const newData = [
-            {attribute: this.constants.QUERY, value: this.javascriptAttributes.query},
-            {attribute: this.constants.STATUS, value: this.javascriptAttributes.status},
-            {attribute: this.constants.CONTINENT, value: this.locationAttributes.continent},
-            {attribute: this.constants.CONTINENT_CODE, value: this.locationAttributes.continentCode},
-            {attribute: this.constants.COUNTRY, value: this.locationAttributes.country},
-            {attribute: this.constants.COUNTRY_CODE, value: this.locationAttributes.countryCode},
-            {attribute: this.constants.REGION, value: this.locationAttributes.region},
-            {attribute: this.constants.REGION_NAME, value: this.locationAttributes.regionName},
-            {attribute: this.constants.CITY, value: this.locationAttributes.city},
-            {attribute: this.constants.DISTRICT, value: this.locationAttributes.district},
-            {attribute: this.constants.ZIP, value: this.locationAttributes.zip},
-            {attribute: this.constants.ASNAME, value: this.javascriptAttributes.asName},
-            {attribute: this.constants.REVERSE, value: this.javascriptAttributes.reverse},
-            {attribute: this.constants.MOBILE, value: this.javascriptAttributes.mobile},
-            {attribute: this.constants.PROXY, value: this.javascriptAttributes.proxy},
-            {attribute: this.constants.OFFSET, value: this.javascriptAttributes.offset},
-            {attribute: this.constants.CURRENCY, value: this.javascriptAttributes.currency},
-            {attribute: this.constants.ISP, value: this.javascriptAttributes.isp},
-            {attribute: this.constants.ZIP, value: this.locationAttributes.zip},
-            {attribute: this.constants.HOSTING, value: this.javascriptAttributes.hosting}
-          ]
-          this.dataSource.data = [...this.dataSource.data, ...newData];
 
-        },
-        error: (error) => {
+
+        const newData = [
+
+        ]
+      },
+      error: (error) => {
         console.error(error);
       }
-    })
+    });
+}
+
+  public setupDataSource(res:any): any[] {
+    return [
+      {attribute: this.constants.USER_AGENT, value: this.fingerprint.userAgent},
+      {attribute: this.constants.NAVIGATOR_TYPE, value: this.fingerprint.navigatorType},
+      {attribute: this.constants.TIMEZONE, value: this.fingerprint.timeZone},
+      {attribute: this.constants.LOCALE, value: this.fingerprint.locale},
+      {attribute: this.constants.CALENDAR, value: this.fingerprint.calendar},
+      {attribute: this.constants.NUMBERING_SYSTEM, value: this.fingerprint.numberingSystem},
+      {attribute: this.constants.PLATFORM_TYPE, value: this.fingerprint.platformType},
+      {attribute: this.constants.BATTERY, value: this.fingerprint.battery},
+      {attribute: this.constants.HARDWARE_CONCURRENCY, value: this.fingerprint.hardwareConcurrency},
+      {attribute: this.constants.WEBGL_RENDERER, value: this.fingerprint.webGLRenderer},
+      {attribute: this.constants.WEBGL_VENDOR, value: this.fingerprint.webGLVendor},
+      {attribute: this.constants.DEVICE_MEMORY, value: this.fingerprint.deviceMemory},
+      {attribute: this.constants.GYROSCOPE, value: this.fingerprint.gyroscope},
+      {attribute: this.constants.SCREEN, value: this.fingerprint.screen},
+      {attribute: this.constants.IPADDRESS, value: this.fingerprint.ipAddress},
+      {attribute: this.constants.COOKIES_ENABLED, value: this.fingerprint.cookiesEnabled},
+      {attribute: this.constants.HOSTNAME, value: this.fingerprint.hostname},
+      {attribute: this.constants.PROTOCOL, value: this.fingerprint.protocol},
+      {attribute: this.constants.QUERY, value: res.query},
+      {attribute: this.constants.STATUS, value: res.status},
+      {attribute: this.constants.CONTINENT, value: res.continent},
+      {attribute: this.constants.CONTINENT_CODE, value: res.continentCode},
+      {attribute: this.constants.COUNTRY, value: res.country},
+      {attribute: this.constants.COUNTRY_CODE, value: res.countryCode},
+      {attribute: this.constants.REGION, value: res.region},
+      {attribute: this.constants.REGION_NAME, value: res.regionName},
+      {attribute: this.constants.CITY, value: res.city},
+      {attribute: this.constants.DISTRICT, value: res.district},
+      {attribute: this.constants.ASNAME, value: res.asname},
+      {attribute: this.constants.AS, value: res.as},
+      {attribute: this.constants.REVERSE, value: res.reverse},
+      {attribute: this.constants.MOBILE, value: res.mobile},
+      {attribute: this.constants.PROXY, value: res.proxy},
+      {attribute: this.constants.OFFSET, value: res.offset},
+      {attribute: this.constants.CURRENCY, value: res.currency},
+      {attribute: this.constants.ISP, value: res.isp},
+      {attribute: this.constants.ZIP, value: res.zip},
+      {attribute: this.constants.HOSTING, value: res.hosting},
+      {attribute: this.constants.LOCATION, value: this.fingerprint.coordinates},
+    ];
   }
 
-  public assignJavascriptAttributes(res: any){
-    this.javascriptAttributes.query = res.query;
-    this.javascriptAttributes.status = res.status;
-    this.locationAttributes.continent = res.continent;
-    this.locationAttributes.continentCode = res.continentCode;
-    this.locationAttributes.country = res.country;
-    this.locationAttributes.countryCode = res.countryCode;
-    this.locationAttributes.region = res.region;
-    this.locationAttributes.regionName = res.regionName;
-    this.locationAttributes.city = res.city;
-    this.locationAttributes.district = res.district;
-    this.locationAttributes.zip = res.zip;
-  }
-  public assignLocationAttributes(res: any){
-    this.javascriptAttributes.asName = res.asname;
-    this.javascriptAttributes.reverse = res.reverse;
-    this.javascriptAttributes.mobile = res.mobile;
-    this.javascriptAttributes.proxy = res.proxy;
-    this.javascriptAttributes.offset = res.offset;
-    this.javascriptAttributes.currency = res.currency;
-    this.javascriptAttributes.timezone = res.timezone;
-    this.javascriptAttributes.isp = res.isp;
-    this.javascriptAttributes.hosting = res.hosting;
-
-  }
-  public getLocation() {
+public getLocation() {
     navigator.geolocation.getCurrentPosition(position => {
-      this.locationAttributes.coordinates = position.coords.latitude + ', ' + position.coords.longitude;
+      this.fingerprint.coordinates = position.coords.latitude + ', ' + position.coords.longitude;
       // Crear un nuevo elemento de datos
-      const newData = { attribute: this.constants.LOCATION, value: this.locationAttributes.coordinates };
+      const newData = { attribute: this.constants.LOCATION, value: this.fingerprint.coordinates };
       // Obtener los datos actuales del dataSource
       const currentData = this.dataSource.data;
 
@@ -537,60 +669,26 @@ export class FingerprintComponent implements OnInit {
     //
     //     return `GPU: ${vendor} ${renderer}`;
     // }
-  private setupDataSource(): void {
-    this.dataSource.data = [
-      {attribute: this.constants.USER_AGENT, value: this.httpHeaderAttributes.userAgent},
-      {attribute: this.constants.NAVIGATOR_TYPE, value: this.javascriptAttributes.navigatorType},
-      {attribute: this.constants.TIMEZONE, value: this.javascriptAttributes.timeZone},
-      {attribute: this.constants.LOCALE, value: this.javascriptAttributes.locale},
-      {attribute: this.constants.CALENDAR, value: this.javascriptAttributes.calendar},
-      {attribute: this.constants.NUMBERING_SYSTEM, value: this.javascriptAttributes.numberingSystem},
-      {attribute: this.constants.PLATFORM_TYPE, value: this.javascriptAttributes.platformType},
-      {attribute: this.constants.BATTERY, value: this.javascriptAttributes.battery},
-      {attribute: this.constants.HARDWARE_CONCURRENCY, value: this.javascriptAttributes.hardwareConcurrency},
-      {attribute: this.constants.WEBGL_RENDERER, value: this.javascriptAttributes.webGLRenderer},
-      {attribute: this.constants.WEBGL_VENDOR, value: this.javascriptAttributes.webGLVendor},
-      {attribute: this.constants.DEVICE_MEMORY, value: this.javascriptAttributes.deviceMemory},
-      {attribute: this.constants.IPADDRESS, value: this.ipAddressAttributes.ipAddress},
-      {attribute: this.constants.HOSTNAME, value: this.ipAddressAttributes.hostname},
-      {attribute: this.constants.PROTOCOL, value: this.ipAddressAttributes.protocol}
-    ];
-  }
 
   ngOnInit(): void {
     /*this.dataSource.push(this.javascriptAttributesList)*/
     this.getLocation()
     this.loadInitialData();
-    //navigator.geolocation.getCurrentPosition((position) => console.log(position))
     this.getJavascriptAttributesData();
     this.getVideoCardInfo();
-    //console.log(this.getPosition())
-    //console.log(window.navigator)
-    //console.log(this.hasAdBlock());
     this.hasCookiesEnabled();
-    //console.log(this.getLocationForMap())
     this.deviceMemory();
     this.screenSize();
     this.gyroscope();
     this.accelerometer();
     this.hardwareConcurrency();
-    this.saveFingerprint();
+    //this.saveFingerprint();
     this.getProtocol();
     this.getLocationForMap();
     this.setMapCenter();
     this.getGpu();
-    //his.getPosition();
-
-    //console.log(this.getIpAddress());
-    //console.log(this.ipAddressAttributes.ipAddress);
-    //console.log(this.getHostname());
-    //console.log(this.getJavascriptAttributesData())
-    //console.log(this.fingerprintService.getAllFingerprints())
-    //this.getKeyboardLayout();
     this.getGpuInfo();
-    this.getAPIAttributes();
-    console.log(this.getVideoCardInfo());
 
-    this.setupDataSource();
+    this.setupDataSource2();
   }
 }

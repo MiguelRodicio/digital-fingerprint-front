@@ -42,6 +42,11 @@ tr:nth-child(even) {
   align-items: center; /* Centra verticalmente (opcional) */
   /*height: 100vh; /* Ajusta la altura para ocupar toda la ventana */
 }
+
+.table-container-button{
+  
+}
+
 .mat-elevation-z8 {
   max-width: 60%; /* Ajusta el ancho máximo de la tabla según tus preferencias */
 }
@@ -59,6 +64,9 @@ tr:nth-child(even) {
   border-radius: 4px; /* Bordes redondeados */
 }
 
+button {
+  margin-right: 10px; /* Agrega margen derecho para separar el botón de la tabla */
+}
 
 
 

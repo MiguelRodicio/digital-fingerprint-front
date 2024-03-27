@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import {HttpClient, HttpHeaders} from "@angular/common/http";
-import {Fingerprint, JavascriptAttributes, IpAddressAttributes} from "../models/fingerprint.model";
+import {Fingerprint} from "../models/fingerprint.model";
 import {Observable} from "rxjs";
 const baseUrl = 'http://localhost:8080';
 
@@ -11,7 +11,6 @@ const baseUrl = 'http://localhost:8080';
 export class FingerprintService {
 
   fingerprint?:Fingerprint;
-  ipAddressData?: IpAddressAttributes;
 
   //javascriptAttributes?: string;
   //httpAttributes:? string;
@@ -38,8 +37,9 @@ export class FingerprintService {
   }
 
 
-  createFingerprint(data: any): Observable<any>{
-    return this.http.post<any>('api/fingerprint', data);
+  saveFingerprint(data: any): Observable<any>{
+    const url = "http://localhost:3000/fingerprint"
+    return this.http.post<any>(url, data);
   }
 
   getFingerprint(id: any): Observable<any>{
