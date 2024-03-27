@@ -1,0 +1,11 @@
+<button mat-stroked-button [matMenuTriggerFor]="downloadMenu">Descargar</button>
+
+<mat-menu #downloadMenu="matMenu">
+  <button mat-menu-item
+          *ngFor="let fileTypeItem of fileTypes"
+          (click)="downloadDocument(fileTypeItem.fileType)">
+    {{fileTypeItem.label}}
+  </button>
+</mat-menu>
+
+

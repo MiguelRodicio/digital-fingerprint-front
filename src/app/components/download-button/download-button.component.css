@@ -1,0 +1,9 @@
+/* Estilo personalizado para el menú */
+.custom-menu {
+  margin-top: 10px; /* Agrega espacio vertical arriba del menú */
+  margin-left: 10px; /* Agrega espacio a la izquierda del menú */
+}
+button {
+  margin-right: 10px; /* Agrega margen derecho para separar el botón de la tabla */
+}
+
