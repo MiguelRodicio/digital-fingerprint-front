@@ -39,7 +39,8 @@ export class FingerprintService {
 
   saveFingerprint(data: any): Observable<any>{
     const url = "http://localhost:3000/fingerprint"
-    return this.http.post<any>(url, data);
+    return this.http.post<any>(url, data)
+
   }
 
   getFingerprint(id: any): Observable<any>{
