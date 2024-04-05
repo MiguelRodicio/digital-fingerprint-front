@@ -1,11 +1,9 @@
-<button mat-stroked-button [matMenuTriggerFor]="downloadMenu">Descargar</button>
-
-<mat-menu #downloadMenu="matMenu">
-  <button mat-menu-item
+<button class="download-button" (click)="toggleMenu()">Descargar</button>
+<div *ngIf="showMenu" class="custom-menu">
+  <button class="custom-menu-item"
           *ngFor="let fileTypeItem of fileTypes"
           (click)="downloadDocument(fileTypeItem.fileType)">
+<!--    <img ngSrc="./app/icons/txt-icon.svg" alt="JSON Icon" height="800" width="800">-->
     {{fileTypeItem.label}}
   </button>
-</mat-menu>
-
-
+</div>

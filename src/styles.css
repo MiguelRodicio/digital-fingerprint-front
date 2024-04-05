@@ -35,16 +35,31 @@ tr:nth-child(even) {
   font-size: 16px; /* Tamaño de fuente personalizado */
   font-weight: bold; /* Hacer el texto en negrita */
   color: black;
+  background-color: #e0e0e0; /* Cambia el color de fondo de las celdas de encabezado según tus preferencias */
 }
+
 .table-container {
   display: flex; /* Utiliza flexbox para centrar */
   justify-content: center; /* Centra horizontalmente */
   align-items: center; /* Centra verticalmente (opcional) */
   /*height: 100vh; /* Ajusta la altura para ocupar toda la ventana */
+  width: 100%;
 }
 
 .table-container-button{
-  
+  display: flex; /* Utiliza flexbox para centrar */
+  justify-content: center; /* Centra horizontalmente */
+  align-items: center; /* Centra verticalmente (opcional) */
+  /*height: 100vh; /* Ajusta la altura para ocupar toda la ventana */
+}
+.mat-row:nth-child(odd) {
+  background-color: #f9f9f9; /* Cambia el color de fondo de las filas impares según tus preferencias */
+}
+.mat-table {
+  background-color: white; /* Cambia el color de fondo de la tabla según tus preferencias */
+  border-radius: 10px; /* Agrega bordes redondeados a la tabla */
+  overflow: hidden; /* Oculta cualquier contenido que se desborde de la tabla */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Agrega una sombra suave a la tabla */
 }
 
 .mat-elevation-z8 {

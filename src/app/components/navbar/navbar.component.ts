@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import {SharedDataService} from "../../services/shared-data.service";
 
 @Component({
   selector: 'app-navbar',
@@ -7,9 +8,13 @@ import { Component, OnInit } from '@angular/core';
 })
 export class NavbarComponent implements OnInit {
 
-  constructor() { }
+  fingerprintData: any;
+  constructor(private sharedDataService: SharedDataService) { }
 
   ngOnInit(): void {
+    this.sharedDataService.fingerprintData$.subscribe(data => {
+      this.fingerprintData = data;
+    });
   }
 
 }

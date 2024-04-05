@@ -31,6 +31,7 @@ export class Constants {
   DISTRICT = "District"
   ZIP = "Zip"
   ASNAME = "ASName"
+  ORG = "Org"
   AS = "AS"
   REVERSE = "Reverse"
   MOBILE = "Mobile"

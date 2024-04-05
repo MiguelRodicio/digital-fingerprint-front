@@ -12,19 +12,21 @@ import { MatButtonModule } from '@angular/material/button';
 import { AppComponent } from './app.component';
 import { NavbarComponent } from './components/navbar/navbar.component';
 import { FingerprintModule } from './modules/fingerprint/fingerprint.module';
+import {DownloadButtonModule} from "./modules/download-button/download-button.module";
 
 @NgModule({
     declarations: [AppComponent, NavbarComponent, CheckboxComponent],
-    imports: [
-        BrowserModule,
-        BrowserAnimationsModule,
-        FingerprintModule,
-        FlexModule,
-        MatToolbarModule,
-        MatTooltipModule,
-        HttpClientModule,
-        MatButtonModule,
-    ],
+  imports: [
+    BrowserModule,
+    BrowserAnimationsModule,
+    FingerprintModule,
+    FlexModule,
+    MatToolbarModule,
+    MatTooltipModule,
+    HttpClientModule,
+    MatButtonModule,
+    DownloadButtonModule,
+  ],
     providers: [Constants],
     bootstrap: [AppComponent],
 })

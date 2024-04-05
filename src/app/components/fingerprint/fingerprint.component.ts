@@ -9,6 +9,7 @@ import { BatteryInfo } from '../../models/fingerprint.model';
 import {detectAnyAdblocker} from "just-detect-adblock";
 import {getGPUTier} from 'detect-gpu';
 import {MatTableDataSource} from "@angular/material/table";
+import {SharedDataService} from "../../services/shared-data.service";
 
 
 @Component({
@@ -20,23 +21,18 @@ export class FingerprintComponent implements OnInit {
 
   dataSource = new MatTableDataSource<any>([]);
 
-  mapOptions: google.maps.MapOptions = {
-    center: { lat: 0, lng: 0 }, // Coordenadas del centro del mapa
-    zoom: 10, // Nivel de zoom
-  };
-
-  //center: google.maps.LatLngLiteral;
-
   public completed: boolean = false;
   public allCompleted: boolean = false;
   private unsubscribe: Subject<any> = new Subject();
   public apiData: any = {};
+  public isLoaded: boolean = false;
+  public tableData : any = [];
 
 
   public fingerprint: Fingerprint = {
     navigatorType: '',
     webGLRenderer: '',
-    connection: '',
+    //connection: '',
     adblock: '',
     keyboardLayout: '',
     cookiesEnabled: '',
@@ -49,50 +45,18 @@ export class FingerprintComponent implements OnInit {
     battery: '',
     screen: '',
     cookies: '',
-    positionMap: {lat: 0, lng: 0},
     mapCenter:  { lat: 0, lng: 0 },
-    id: 0
+    //id: 0
   };
-
-  // public ipAddressAttributes: IpAddressAttributes = {
-  //   ipAddress: '',
-  //   ipv6Address: '',
-  //   hostname: '',
-  //   protocol: '',
-  //   ipAddressLocation: '',
-  //   localIpAddress: '',
-  //   publicIpAddress: '',
-  //   dnsServers: '',
-  //   //mtu: 0,
-  //   //hops: 0,
-  //   ipCountry: '',
-  //   ipStateRegion: '',
-  //   ipCity: '',
-  // }
-  //
-
-
-  //Mat-table data
-
   columns: string[] = ['attribute', 'value'];
 
-
-  /*public dataSource : any[] = [];
-  public displayedColumns: any[] =
-    [
-     /!* this.constants.ATTRIBUTE_TYPE,
-      this.constants.VALUE,*!/
-      this.constants.USER_AGENT,
-      this.constants.LOCALE,
-      this.constants.CALENDAR,
-      this.constants.NUMBERING_SYSTEM
-    ];*/
-
-    constructor(private fingerprintService: FingerprintService, public constants: Constants) {
-      this.loadInitialData()
+    constructor(private fingerprintService: FingerprintService,
+                private sharedDataService: SharedDataService,
+                public constants: Constants) {
+      //this.loadInitialData()
 
     }
-    public geolocationData: any;
+
     public javascriptAttributesData: any;
 
   /*  public getNavigatorType() {
@@ -151,51 +115,10 @@ export class FingerprintComponent implements OnInit {
 
   }
 
-
-  public async saveFingerprint(){
-    if(this.fingerprint.adblock!=undefined){
-      this.fingerprint.adblock = await this.hasAdBlock();
-    }
-    const data = {
-      id: this.fingerprint.id,
-      navigatorType: this.fingerprint.navigatorType,
-      locale: this.fingerprint.locale,
-      calendar: this.fingerprint.calendar,
-      numberingSystem: this.fingerprint.numberingSystem,
-      connection: this.fingerprint.connection,
-      webRenderer: this.fingerprint.webGLRenderer,
-      adblock: this.fingerprint.adblock,
-      cookiesEnabled: this.fingerprint.cookiesEnabled,
-      platformType: this.fingerprint.platformType,
-      deviceMemory: this.fingerprint.deviceMemory,
-      timeZone: this.fingerprint.timeZone,
-      screenWidth: this.fingerprint.screenWidth,
-      screenHeight: this.fingerprint.screenHeight,
-      gyroscope: this.fingerprint.gyroscope,
-      accelerometer: this.fingerprint.accelerometer,
-      hardwareConcurrency: this.fingerprint.hardwareConcurrency,
-      screen: this.fingerprint.screen
-    };
-    this.fingerprintService.saveFingerprint(data)
-      .subscribe({
-        next:(res)=>{
-          console.log(res);
-        },
-        error: (e) => console.error(e)
-      });
-    /*createFingerprint(data)
-      .subscribe({
-        next:(res)=>{
-          console.log(res);
-        },
-        error: (e) => console.error(e)
-      });*/
-  }
-
   public getGpu(){
     (async () => {
       const gpuTier = await getGPUTier();
-      this.fingerprint.webGLRenderer = gpuTier.gpu;
+      console.log(this.fingerprint.webGLRenderer = gpuTier.gpu);
 
       // Example output:
       // {
@@ -211,7 +134,7 @@ export class FingerprintComponent implements OnInit {
     public getGpuToObservable(): Observable<any> {
         return from(getGPUTier());
     }
-    public  getGpuInfo(): void {
+    public getGpuInfo(): void {
         this.getGpuToObservable()
             .pipe(takeUntil(this.unsubscribe))
             .subscribe((gpuTier) => {
@@ -344,7 +267,7 @@ export class FingerprintComponent implements OnInit {
   }
 
   public getHostname(){
-    this.fingerprint.hostname = location.hostname;
+    return this.fingerprint.hostname = window.location.hostname;
   }
 
   public getProtocol(){
@@ -544,44 +467,82 @@ export class FingerprintComponent implements OnInit {
 //       }
 //     });
 // }
-public setupDataSource2() {
 
+  public postFingerprintData(data: any){
+    this.fingerprintService.saveFingerprint(data)
+      .pipe(takeUntil(this.unsubscribe))
+      .subscribe({
+        next:(res) =>{
+          console.log(res);
+        },
+        error: (error) => {
+          console.error(error);
+        }
+      })
+  }
+
+
+  public setupAllDataOnTable() {
     this.fingerprintService.getGeolocationAttributes()
       .pipe(takeUntil(this.unsubscribe))
       .subscribe({
       next: (res: any) => {
-        this.dataSource.data = this.setupDataSource(res);
-        //this.assignAttributesFromAPI(res);
-        this.fingerprint.status = res.status;
-        this.fingerprint.continent = res.continent;
-        this.fingerprint.continentCode = res.continentCode;
-        this.fingerprint.country = res.country;
-        this.fingerprint.countryCode = res.countryCode;
-        this.fingerprint.region = res.region;
-        this.fingerprint.regionName = res.regionName;
-        this.fingerprint.city = res.city;
-        this.fingerprint.district = res.district;
-        this.fingerprint.zip = res.zip;
-        this.fingerprint.latitude = res.lat;
-        this.fingerprint.longitude = res.lon;
-        this.fingerprint.timezone = res.timezone;
-        this.fingerprint.offset = res.offset;
-        this.fingerprint.currency = res.currency;
-        this.fingerprint.isp = res.isp;
-        this.fingerprint.org = res.org;
-        this.fingerprint.as = res.as;
-        this.fingerprint.asName = res.asname;
-        this.fingerprint.reverse = res.reverse;
-        this.fingerprint.mobile = res.mobile;
-        this.fingerprint.proxy = res.proxy;
-        this.fingerprint.hosting = res.hosting;
-        this.fingerprint.query = res.query;
+        this.getVideoCardInfo();
+        this.tableData = this.setupDataOnTable(res);
 
+        const data = {
+          ...res,
+          ...this.fingerprint,
+          // status: res.status,
+          // continent: res.continent,
+          // continentCode: res.continentCode,
+          // country: res.country,
+          // countryCode: res.countryCode,
+          // region: res.region,
+          // regionName: res.regionName,
+          // city: res.city,
+          // district: res.district,
+          // zip: res.zip,
+          // latitude: res.lat,
+          // longitude: res.lon,
+          // timezone: res.timezone,
+          // offset: res.offset,
+          // currency: res.currency,
+          // isp: res.isp,
+          // org: res.org,
+          // as: res.as,
+          // asName: res.asname,
+          // reverse: res.reverse,
+          // mobile: res.mobile,
+          // proxy: res.proxy,
+          // hosting: res.hosting,
+          // query: res.query,
+          // userAgent: this.fingerprint.userAgent,
+          // navigatorType: this.fingerprint.navigatorType,
+          // locale: this.fingerprint.locale,
+          // calendar: this.fingerprint.calendar,
+          // numberingSystem: this.fingerprint.numberingSystem,
+          // platformType: this.fingerprint.platformType,
+          // deviceMemory: this.fingerprint.deviceMemory,
+          // webGLRenderer: this.fingerprint.webGLRenderer,
+          // webGLVendor: this.fingerprint.webGLVendor,
+          // gyroscope: this.fingerprint.gyroscope,
+          // accelerometer: this.fingerprint.accelerometer,
+          // hardwareConcurrency: this.fingerprint.hardwareConcurrency,
+          // battery: this.fingerprint.battery,
+          // screen: this.fingerprint.screen,
+          // cookiesEnabled: this.fingerprint.cookiesEnabled,
+          // hostname: this.fingerprint.hostname,
+          // protocol: this.fingerprint.protocol,
+          // coordinates: this.fingerprint.coordinates,
+        }
 
+        this.postFingerprintData(data);
 
-        const newData = [
-
-        ]
+        this.sharedDataService.setFingerprintData(data);
+        // const dataFromMatTable = this.dataSource.data;
+        // const normalTableData: any[] = dataFromMatTable.slice()
+        this.isLoaded = true;
       },
       error: (error) => {
         console.error(error);
@@ -589,7 +550,7 @@ public setupDataSource2() {
     });
 }
 
-  public setupDataSource(res:any): any[] {
+  public setupDataOnTable(res: any): any[] {
     return [
       {attribute: this.constants.USER_AGENT, value: this.fingerprint.userAgent},
       {attribute: this.constants.NAVIGATOR_TYPE, value: this.fingerprint.navigatorType},
@@ -629,6 +590,7 @@ public setupDataSource2() {
       {attribute: this.constants.ISP, value: res.isp},
       {attribute: this.constants.ZIP, value: res.zip},
       {attribute: this.constants.HOSTING, value: res.hosting},
+      {attribute: this.constants.ORG, value: res.org},
       {attribute: this.constants.LOCATION, value: this.fingerprint.coordinates},
     ];
   }
@@ -645,7 +607,22 @@ public getLocation() {
       // const updatedData = [...currentData, newData];
 
       // Asignar los datos actualizados al dataSource
-      this.dataSource.data = [...currentData, newData];
+      //this.dataSource.data = [...currentData, newData];
+    });
+  }
+
+  getLocalStorage(){
+    const itemCount = localStorage.length;
+    console.log("Cantidad de elementos en localStorage:", itemCount);
+
+// Obtener todas las claves almacenadas en localStorage
+    const keys = Object.keys(localStorage);
+
+// Iterar sobre cada clave y obtener su valor
+    keys.forEach(key => {
+      const value = localStorage.getItem(key);
+      // Mostrar la clave y el valor
+      console.log("Clave:", key, "Valor:", value);
     });
   }
   //TODO
@@ -673,6 +650,7 @@ public getLocation() {
   ngOnInit(): void {
     /*this.dataSource.push(this.javascriptAttributesList)*/
     this.getLocation()
+    this.getHostname();
     this.loadInitialData();
     this.getJavascriptAttributesData();
     this.getVideoCardInfo();
@@ -686,9 +664,10 @@ public getLocation() {
     this.getProtocol();
     this.getLocationForMap();
     this.setMapCenter();
-    this.getGpu();
+    //this.getGpu();
     this.getGpuInfo();
 
-    this.setupDataSource2();
+    this.setupAllDataOnTable();
+    this.getLocalStorage()
   }
 }

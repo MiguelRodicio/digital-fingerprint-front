@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import {CommonModule, NgOptimizedImage} from '@angular/common';
 import {DownloadButtonComponent} from "../../components/download-button/download-button.component";
 import {MatButtonModule} from "@angular/material/button";
 import {MatMenuModule} from "@angular/material/menu";
@@ -14,10 +14,11 @@ import {MatMenuModule} from "@angular/material/menu";
     DownloadButtonComponent
   ],
 
-  imports: [
-    CommonModule,
-    MatButtonModule,
-    MatMenuModule
-  ]
+    imports: [
+        CommonModule,
+        MatButtonModule,
+        MatMenuModule,
+        NgOptimizedImage
+    ]
 })
 export class DownloadButtonModule { }
