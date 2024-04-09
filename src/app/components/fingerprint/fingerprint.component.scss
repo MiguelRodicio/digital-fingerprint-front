@@ -26,7 +26,8 @@
 .custom-header-cell {
   font-weight: bold;
   background-color: #e0e0e0; /* Color de fondo para las celdas de encabezado */
-  padding: 10px; /* Añade espacio de relleno para mejorar la legibilidad */
+  padding-right: 120px; /* Añade espacio de relleno para mejorar la legibilidad */
+
 }
 
 .custom-header-row, .custom-row {
@@ -45,4 +46,13 @@
   /* Otros estilos... */
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Cambia el tipo de letra */
   margin-bottom: 20px;
+}
+
+.custom-row {
+  transition: background-color 0.3s ease, box-shadow 0.3s ease; /* Transición suave de color de fondo y sombra */
+}
+
+.custom-row:hover {
+  background-color: #e0e0e0; /* Cambia el color de fondo al pasar el mouse */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Agrega una sombra sutil */
 }

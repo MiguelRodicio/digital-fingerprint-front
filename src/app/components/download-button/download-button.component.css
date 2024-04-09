@@ -1,79 +1,93 @@
-/* Estilo base del botón */
-.download-button {
-  background-color: #4CAF50; /* Color de fondo */
-  border: none; /* Sin borde */
+/*!* Estilo base del botón *!*/
+/*.download-button {*/
+/*  background-color: #4CAF50; !* Color de fondo *!*/
+/*  border: none; !* Sin borde *!*/
+/*  color: white; !* Color del texto *!*/
+/*  padding: 10px 20px; !* Espaciado interno *!*/
+/*  text-align: center; !* Alineación del texto *!*/
+/*  text-decoration: none; !* Sin subrayado *!*/
+/*  display: inline-block; !* Mostrar en línea *!*/
+/*  font-size: 16px; !* Tamaño de la fuente *!*/
+/*  margin: 4px 2px; !* Margen exterior *!*/
+/*  cursor: pointer; !* Cursor al pasar *!*/
+/*  border-radius: 10px; !* Borde redondeado *!*/
+/*  transition-duration: 0.4s; !* Duración de la transición *!*/
+/*}*/
+
+/*!* Estilo del botón al pasar el mouse *!*/
+/*.download-button:hover {*/
+/*  background-color: #45a049; !* Cambio de color de fondo *!*/
+/*  color: white; !* Cambio de color del texto *!*/
+/*}*/
+
+/*!* Estilo del botón al hacer clic *!*/
+/*.download-button:active {*/
+/*  background-color: #4CAF50; !* Color de fondo al hacer clic *!*/
+/*  transform: translateY(1px); !* Efecto de desplazamiento hacia abajo *!*/
+/*}*/
+
+/*!* Estilo para el menú *!*/
+/*.custom-menu {*/
+/*  !*position: absolute;*!*/
+/*  background-color: #fff; !* Color de fondo *!*/
+/*  border: 1px solid rgba(0, 0, 0, 0.12); !* Borde *!*/
+/*  border-radius: 4px; !* Bordes redondeados *!*/
+/*  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); !* Sombra *!*/
+/*  !*padding: 8px 0; !* Espaciado interno *!*!*/
+/*}*/
+
+/*!* Estilo para los elementos del menú *!*/
+/*.custom-menu-item {*/
+/*  display: block;*/
+/*  padding: 8px 16px;*/
+/*  font-size: 14px;*/
+/*  color: rgba(0, 0, 0, 0.87);*/
+/*  text-decoration: none;*/
+/*  cursor: pointer;*/
+/*  outline: none;*/
+/*  border: none; !* Sin bordes *!*/
+/*  background: none; !* Fondo transparente *!*/
+/*  width: 100%; !* Ocupar toda la anchura *!*/
+/*}*/
+
+/*!* Estilo para la línea divisoria *!*/
+/*.custom-menu-item + .custom-menu-item {*/
+/*  border-top: 1px solid rgba(0, 0, 0, 0.12); !* Borde superior *!*/
+/*}*/
+
+
+/*!* Estilo cuando se pasa el mouse sobre un elemento del menú *!*/
+/*.custom-menu-item:hover {*/
+/*  background-color: rgba(0, 0, 0, 0.04);*/
+/*}*/
+
+/*!* Estilo cuando un elemento del menú está activo *!*/
+/*.custom-menu-item.active {*/
+/*  background-color: rgba(0, 0, 0, 0.08);*/
+/*}*/
+
+
+/*!* Estilo para el icono *!*/
+/*.custom-menu-item .icon {*/
+/*  margin-right: 8px; !* Espacio entre el icono y el texto *!*/
+/*}*/
+
+/*!* Estilo para el texto *!*/
+/*.custom-menu-item .label {*/
+/*  font-size: 14px;*/
+/*  color: rgba(0, 0, 0, 0.87);*/
+/*}*/
+.custom-button {
+  background-color: #007bff; /* Color de fondo */
+  /*margin-left: 10px;*/
   color: white; /* Color del texto */
-  padding: 10px 20px; /* Espaciado interno */
-  text-align: center; /* Alineación del texto */
-  text-decoration: none; /* Sin subrayado */
-  display: inline-block; /* Mostrar en línea */
-  font-size: 16px; /* Tamaño de la fuente */
-  margin: 4px 2px; /* Margen exterior */
-  cursor: pointer; /* Cursor al pasar */
-  border-radius: 10px; /* Borde redondeado */
-  transition-duration: 0.4s; /* Duración de la transición */
+  border-radius: 8px; /* Bordes redondeados */
+  padding: 6px 16px; /* Espacio interno */
+  font-size: 14px; /* Tamaño del texto */
+  cursor: pointer; /* Cambio de cursor al pasar sobre él */
+  transition: background-color 0.3s ease; /* Transición suave al cambiar de color de fondo */
 }
 
-/* Estilo del botón al pasar el mouse */
-.download-button:hover {
-  background-color: #45a049; /* Cambio de color de fondo */
-  color: white; /* Cambio de color del texto */
-}
-
-/* Estilo del botón al hacer clic */
-.download-button:active {
-  background-color: #4CAF50; /* Color de fondo al hacer clic */
-  transform: translateY(1px); /* Efecto de desplazamiento hacia abajo */
-}
-
-/* Estilo para el menú */
-.custom-menu {
-  /*position: absolute;*/
-  background-color: #fff; /* Color de fondo */
-  border: 1px solid rgba(0, 0, 0, 0.12); /* Borde */
-  border-radius: 4px; /* Bordes redondeados */
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Sombra */
-  /*padding: 8px 0; !* Espaciado interno *!*/
-}
-
-/* Estilo para los elementos del menú */
-.custom-menu-item {
-  display: block;
-  padding: 8px 16px;
-  font-size: 14px;
-  color: rgba(0, 0, 0, 0.87);
-  text-decoration: none;
-  cursor: pointer;
-  outline: none;
-  border: none; /* Sin bordes */
-  background: none; /* Fondo transparente */
-  width: 100%; /* Ocupar toda la anchura */
-}
-
-/* Estilo para la línea divisoria */
-.custom-menu-item + .custom-menu-item {
-  border-top: 1px solid rgba(0, 0, 0, 0.12); /* Borde superior */
-}
-
-
-/* Estilo cuando se pasa el mouse sobre un elemento del menú */
-.custom-menu-item:hover {
-  background-color: rgba(0, 0, 0, 0.04);
-}
-
-/* Estilo cuando un elemento del menú está activo */
-.custom-menu-item.active {
-  background-color: rgba(0, 0, 0, 0.08);
-}
-
-
-/* Estilo para el icono */
-.custom-menu-item .icon {
-  margin-right: 8px; /* Espacio entre el icono y el texto */
-}
-
-/* Estilo para el texto */
-.custom-menu-item .label {
-  font-size: 14px;
-  color: rgba(0, 0, 0, 0.87);
+.custom-button:hover {
+  background-color: #0056b3; /* Cambio de color de fondo al pasar el cursor */
 }

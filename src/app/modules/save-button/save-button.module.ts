@@ -4,17 +4,17 @@ import {DownloadButtonComponent} from "../../components/download-button/download
 import {MatButtonModule} from "@angular/material/button";
 import {MatMenuModule} from "@angular/material/menu";
 import {MatIconModule} from "@angular/material/icon";
+import {SaveButtonComponent} from "../../components/save-button/save-button.component";
 
 
 
 @NgModule({
   declarations: [
-    DownloadButtonComponent
+    SaveButtonComponent
   ],
   exports: [
-    DownloadButtonComponent
+    SaveButtonComponent
   ],
-
   imports: [
     CommonModule,
     MatButtonModule,
@@ -23,4 +23,4 @@ import {MatIconModule} from "@angular/material/icon";
     MatIconModule
   ]
 })
-export class DownloadButtonModule { }
+export class SaveButtonModule { }

@@ -1,0 +1,14 @@
+.custom-button {
+  background-color: #007bff; /* Color de fondo */
+  /*margin-left: 10px;*/
+  color: white; /* Color del texto */
+  border-radius: 8px; /* Bordes redondeados */
+  padding: 6px 16px; /* Espacio interno */
+  font-size: 14px; /* Tamaño del texto */
+  cursor: pointer; /* Cambio de cursor al pasar sobre él */
+  transition: background-color 0.3s ease; /* Transición suave al cambiar de color de fondo */
+}
+
+.custom-button:hover {
+  background-color: #0056b3; /* Cambio de color de fondo al pasar el cursor */
+}
