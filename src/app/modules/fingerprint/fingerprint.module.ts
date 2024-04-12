@@ -17,35 +17,35 @@ import {DownloadButtonModule} from "../download-button/download-button.module";
 import {MatMenuModule} from "@angular/material/menu";
 import {SearchBarModule} from "../search-bar/search-bar.module";
 import {SaveButtonModule} from "../save-button/save-button.module";
-
-
+import {SearchPipe} from "../../pipes/search.pipe";
 
 
 @NgModule({
   declarations: [
-    FingerprintComponent
+    FingerprintComponent,
+    SearchPipe
   ],
   exports: [
     FingerprintComponent
   ],
-  imports: [
-    CommonModule,
-    MatChipsModule,
-    FlexModule,
-    MatSidenavModule,
-    MatToolbarModule,
-    MatCardModule,
-    MatTableModule,
-    MatCheckboxModule,
-    FormsModule,
-    GoogleMapsModule,
-    MatTooltipModule,
-    MatIconModule,
-    DownloadButtonModule,
-    MatButtonModule,
-    MatMenuModule,
-    SearchBarModule,
-    SaveButtonModule
-  ]
+    imports: [
+        CommonModule,
+        MatChipsModule,
+        FlexModule,
+        MatSidenavModule,
+        MatToolbarModule,
+        MatCardModule,
+        MatTableModule,
+        MatCheckboxModule,
+        FormsModule,
+        GoogleMapsModule,
+        MatTooltipModule,
+        MatIconModule,
+        DownloadButtonModule,
+        MatButtonModule,
+        MatMenuModule,
+        SearchBarModule,
+        SaveButtonModule,
+    ]
 })
 export class FingerprintModule { }

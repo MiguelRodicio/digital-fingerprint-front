@@ -18,6 +18,7 @@ import {MatIconModule} from "@angular/material/icon";
 import {MatMenuModule} from "@angular/material/menu";
 import {SaveButtonModule} from "./modules/save-button/save-button.module";
 
+
 @NgModule({
   declarations: [AppComponent, NavbarComponent, CheckboxComponent],
   imports: [
@@ -32,7 +33,7 @@ import {SaveButtonModule} from "./modules/save-button/save-button.module";
     DownloadButtonModule,
     SaveButtonModule,
     MatIconModule,
-    MatMenuModule
+    MatMenuModule,
   ],
   providers: [Constants],
   bootstrap: [AppComponent]

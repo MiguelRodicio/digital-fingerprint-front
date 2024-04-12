@@ -27,7 +27,9 @@ export class FingerprintComponent implements OnInit {
   public apiData: any = {};
   public isLoaded: boolean = false;
   public tableData : any = [];
-
+  public tableDataFormatted: any;
+  public filteredData: any = [];
+  public searchText: string = '';
 
   public fingerprint: Fingerprint = {
     navigatorType: '',
@@ -48,14 +50,16 @@ export class FingerprintComponent implements OnInit {
     mapCenter:  { lat: 0, lng: 0 },
     //id: 0
   };
-  columns: string[] = ['attribute', 'value'];
 
-    constructor(private fingerprintService: FingerprintService,
-                private sharedDataService: SharedDataService,
-                public constants: Constants) {
-      //this.loadInitialData()
 
-    }
+
+
+
+    constructor(
+      private fingerprintService: FingerprintService,
+      private sharedDataService: SharedDataService,
+      public constants: Constants
+    ) { }
 
     public javascriptAttributesData: any;
 
@@ -374,11 +378,6 @@ export class FingerprintComponent implements OnInit {
     });
   }
 
-
-  public assignAttributesFromAPI(res: any){
-    this.assignAttributes(this.fingerprint, res);
-  }
-
   // public getAPIAttributes(){
   //   this.fingerprintService.getGeolocationAttributes()
   //     .pipe(takeUntil(this.unsubscribe))
@@ -468,6 +467,8 @@ export class FingerprintComponent implements OnInit {
 //     });
 // }
 
+
+
   public postFingerprintData(data: any){
     this.fingerprintService.saveFingerprint(data)
       .pipe(takeUntil(this.unsubscribe))
@@ -481,6 +482,21 @@ export class FingerprintComponent implements OnInit {
       })
   }
 
+  /**
+   * Filtra los datos de la tabla según el texto de búsqueda.
+   * @param tableData - Los datos de la tabla.
+   * @returns void - No devuelve nada.
+   * @example filterData(this.tableData) - Filtra los datos de la tabla.
+   * @see filterData - Filtra los datos de la tabla según el texto de búsqueda.
+   *
+   */
+  filterData(tableData: any[]) {
+    this.filteredData = tableData.filter((item: any) => {
+      // Verifica que item.attribute y item.value sean cadenas de texto antes de llamar a toLowerCase()
+      return (typeof item.attribute === 'string' && item.attribute.toLowerCase().includes(this.searchText.toLowerCase())) ||
+        (typeof item.value === 'string' && item.value.toLowerCase().includes(this.searchText.toLowerCase()));
+    });
+  }
 
   public setupAllDataOnTable() {
     this.fingerprintService.getGeolocationAttributes()
@@ -490,59 +506,16 @@ export class FingerprintComponent implements OnInit {
         this.getVideoCardInfo();
         this.tableData = this.setupDataOnTable(res);
 
-        const data = {
+        this.tableDataFormatted = {
           ...res,
           ...this.fingerprint,
-          // status: res.status,
-          // continent: res.continent,
-          // continentCode: res.continentCode,
-          // country: res.country,
-          // countryCode: res.countryCode,
-          // region: res.region,
-          // regionName: res.regionName,
-          // city: res.city,
-          // district: res.district,
-          // zip: res.zip,
-          // latitude: res.lat,
-          // longitude: res.lon,
-          // timezone: res.timezone,
-          // offset: res.offset,
-          // currency: res.currency,
-          // isp: res.isp,
-          // org: res.org,
-          // as: res.as,
-          // asName: res.asname,
-          // reverse: res.reverse,
-          // mobile: res.mobile,
-          // proxy: res.proxy,
-          // hosting: res.hosting,
-          // query: res.query,
-          // userAgent: this.fingerprint.userAgent,
-          // navigatorType: this.fingerprint.navigatorType,
-          // locale: this.fingerprint.locale,
-          // calendar: this.fingerprint.calendar,
-          // numberingSystem: this.fingerprint.numberingSystem,
-          // platformType: this.fingerprint.platformType,
-          // deviceMemory: this.fingerprint.deviceMemory,
-          // webGLRenderer: this.fingerprint.webGLRenderer,
-          // webGLVendor: this.fingerprint.webGLVendor,
-          // gyroscope: this.fingerprint.gyroscope,
-          // accelerometer: this.fingerprint.accelerometer,
-          // hardwareConcurrency: this.fingerprint.hardwareConcurrency,
-          // battery: this.fingerprint.battery,
-          // screen: this.fingerprint.screen,
-          // cookiesEnabled: this.fingerprint.cookiesEnabled,
-          // hostname: this.fingerprint.hostname,
-          // protocol: this.fingerprint.protocol,
-          // coordinates: this.fingerprint.coordinates,
-        }
+        };
 
-        this.postFingerprintData(data);
+        //this.postFingerprintData(this.tableDataFormatted);
+        this.sharedDataService.setFingerprintData(this.tableDataFormatted);
 
-        this.sharedDataService.setFingerprintData(data);
-        // const dataFromMatTable = this.dataSource.data;
-        // const normalTableData: any[] = dataFromMatTable.slice()
         this.isLoaded = true;
+        this.filterData(this.tableData);
       },
       error: (error) => {
         console.error(error);
@@ -625,27 +598,6 @@ public getLocation() {
       console.log("Clave:", key, "Valor:", value);
     });
   }
-  //TODO
-  public getMTU(){}
-
-    // public getGPUDetails(): string {
-    //     const canvas = document.createElement('canvas');
-    //     const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
-    //
-    //     if (!gl) {
-    //         return 'WebGL is not available in this browser.';
-    //     }
-    //
-    //     const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
-    //     if (!debugInfo) {
-    //         return 'GPU information is not accessible.';
-    //     }
-    //
-    //     const vendor = gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL);
-    //     const renderer = gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL);
-    //
-    //     return `GPU: ${vendor} ${renderer}`;
-    // }
 
   ngOnInit(): void {
     /*this.dataSource.push(this.javascriptAttributesList)*/

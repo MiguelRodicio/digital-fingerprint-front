@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import {Component, EventEmitter, Output} from '@angular/core';
 
 @Component({
   selector: 'app-save-button',
@@ -6,5 +6,9 @@ import { Component } from '@angular/core';
   styleUrls: ['./save-button.component.css']
 })
 export class SaveButtonComponent {
+  @Output() saveData = new EventEmitter<void>()
 
+  save() {
+    this.saveData.emit()
+  }
 }

@@ -2,13 +2,18 @@
   <div class="container">
     <div class="row">
       <div class="col-md-10">
-        <app-search-bar></app-search-bar>
+        <app-search-bar ngDefaultControl
+          [(ngModel)]="searchText"
+          (input)="filterData(this.tableData)"
+        ></app-search-bar>
       </div>
-      <div class="col-1">
+      <div class="col-md-1 mb-3">
         <app-download-button></app-download-button>
       </div>
-      <div class="col-1">
-        <app-save-button></app-save-button>
+      <div class="col-md-1 mb-3">
+        <app-save-button
+          (saveData)="postFingerprintData(tableDataFormatted)"
+        ></app-save-button>
       </div>
 
 
@@ -23,8 +28,13 @@
           </tr>
           </thead>
           <tbody>
+          <ng-container *ngIf="filteredData.length === 0">
+            <tr>
+              <td colspan="2" class="no-results-message">No se han encontrado resultados</td>
+            </tr>
+          </ng-container>
           <!-- Resto de filas -->
-          <tr *ngFor="let item of tableData" class="custom-row">
+          <tr *ngFor="let item of filteredData" class="custom-row">
             <td class="custom-cell attribute-cell">{{ item.attribute }}</td>
             <td class="custom-cell">{{ item.value }}</td>
           </tr>
@@ -33,9 +43,11 @@
       </div>
 
     </div>
-    <div class="table-container">
-      <google-map [center]="this.fingerprint.mapCenter">
-        <map-marker [position]="this.fingerprint.mapCenter">
+    <div class="map-container">
+      <google-map
+        [center]="this.fingerprint.mapCenter">
+        <map-marker
+          [position]="this.fingerprint.mapCenter">
         </map-marker>
       </google-map>
     </div>

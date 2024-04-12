@@ -56,3 +56,17 @@
   background-color: #e0e0e0; /* Cambia el color de fondo al pasar el mouse */
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Agrega una sombra sutil */
 }
+
+.no-results-message {
+  text-align: center; /* Centra el texto */
+  //font-style: italic;
+  font-size: 14px; /* Ajusta el tamaño de la fuente según sea necesario */
+  color: #808080; /* Cambia el color a un tono más oscuro de gris */
+}
+.map-container {
+  width: 500px; /* Ajusta el ancho del mapa */
+  height: 500px; /* Ajusta la altura del mapa */
+  border-radius: 10px; /* Agrega bordes redondeados al mapa */
+  overflow: hidden; /* Oculta cualquier contenido que se desborde del mapa */
+  margin-bottom: 20px;
+}
